@@ -1,0 +1,14 @@
+*.iml
+.gradle
+/local.properties
+/.idea
+.DS_Store
+/build
+**/build/
+/captures
+*.keystore
+*.hprof
+/Bbrows-gecko-debug.apk
+/buildSrc/build
+/docs/adblock-plan.md
+/tools/adblock-corpus/*.tsv
