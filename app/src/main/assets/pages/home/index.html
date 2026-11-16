@@ -69,6 +69,26 @@ td {
 .sugg:hover > div:nth-child(2) {
     color: #6666aa;
 }
+.sugg.add-tile {
+    border: 2px dashed #A5D0FF;
+    cursor: pointer;
+    background: rgba(255, 255, 255, 0.6);
+}
+@media (prefers-color-scheme: dark) {
+    .sugg.add-tile {
+        border: 2px dashed #5078ef;
+        background: rgba(30, 33, 34, 0.6);
+    }
+}
+.sugg.add-tile:hover {
+    border: 2px solid #5078ef;
+    background: #F3F6FA;
+}
+@media (prefers-color-scheme: dark) {
+    .sugg.add-tile:hover {
+        background: #343a3c;
+    }
+}
 .sugg-ico {
     width: 4vw;
     float: left;

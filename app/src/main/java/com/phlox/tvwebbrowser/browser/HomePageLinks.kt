@@ -47,6 +47,30 @@ class HomePageLinks(
             }
             Config.HomePageLinksMode.BOOKMARKS -> {
                 val folder = favorites.existingFolder(config.homePageBookmarksFolder)
+                if (!config.homePageCleanedV2) {
+                    val legacyUrls = setOf(
+                        "https://www.wikipedia.org",
+                        "https://www.reddit.com",
+                        "https://mytuner-radio.com/",
+                        "https://www.instagram.com",
+                        "https://www.imdb.com/",
+                        "https://www.ebay.com/",
+                        "https://itch.io/games/input-gamepad/platform-web",
+                        "https://www.bbc.com/news"
+                    )
+                    val current = favorites.homePageLinkBookmarks(FavoritesRepository.HOME_PAGE)
+                    var removedLegacy = false
+                    for (item in current) {
+                        if (item.url in legacyUrls) {
+                            favorites.delete(item.id)
+                            removedLegacy = true
+                        }
+                    }
+                    if (removedLegacy) {
+                        config.initialBookmarksSuggestionsLoaded = false
+                    }
+                    config.homePageCleanedV2 = true
+                }
                 val bookmarks = favorites.homePageLinkBookmarks(folder)
                 //the first start fills the Home page folder only, a chosen folder stays as the user left it
                 if (folder == FavoritesRepository.HOME_PAGE && bookmarks.isEmpty() &&
@@ -99,14 +123,8 @@ class HomePageLinks(
         // data used in corresponding home html page where them useful for debug
         return try {
             val jsonArray = JSONArray("""[
-        {"title": "Wikipedia - the free encyclopedia", "url":"https://www.wikipedia.org", "favicon": "https://ru.wikipedia.org/static/apple-touch/wikipedia.png"},
-        {"title": "Reddit - Dive into anything", "url":"https://www.reddit.com", "favicon": "https://www.redditstatic.com/desktop2x/img/favicon/apple-icon-120x120.png"},
-        {"title": "My Tuner", "url":"https://mytuner-radio.com/", "favicon": "https://static2.mytuner.mobi/static/icons/apple-touch-icon-120x120-precomposed.png"},
-        {"title": "Instagram", "url":"https://www.instagram.com"},
-        {"title": "IMDb", "url":"https://www.imdb.com/", "favicon": "https://m.media-amazon.com/images/G/01/imdb/images-ANDW73HA/favicon_iPhone_retina_180x180._CB1582158069_UX60_.png"},
-        {"title": "eBay", "url":"https://www.ebay.com/", "favicon": "https://www.ebay.com/apple-touch-icon.png"},
-        {"title": "Itch.io", "url":"https://itch.io/games/input-gamepad/platform-web", "favicon": "https://itch.io/static/images/itchio-square-144.png"},
-        {"title": "BBC News", "url":"https://www.bbc.com/news", "favicon": "https://www.bbc.com/apple-touch-icon-120x120-precomposed.png"}
+        {"title": "Google", "url":"https://www.google.com", "favicon": "favicons/google.png"},
+        {"title": "YouTube", "url":"https://www.youtube.com", "favicon": "https://www.youtube.com/favicon.ico"}
     ]""")
             val result = mutableListOf<FavoriteItem>()
             val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.US)

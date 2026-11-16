@@ -77,6 +77,12 @@ function onSuggestionClicked(index) {
     var bookmark = null;
     if (homePageLinksMode === "BOOKMARKS" && window.hasOwnProperty( "TVBro" )) {
         bookmark = recommendationsToDisplay.find(function (b) { return b.order === index; });
+        if (!bookmark) {
+            if (TVBro.hasOwnProperty("onEditBookmark")) {
+                TVBro.onEditBookmark(index);
+            }
+            return;
+        }
         if (bookmark && TVBro.hasOwnProperty("markBookmarkRecommendationAsUseful")) {
             TVBro.markBookmarkRecommendationAsUseful(index);
         }
@@ -91,15 +97,21 @@ function onSuggestionClicked(index) {
 
 function loadRecommendations() {
     return [
-        {"title": "Wikipedia - the free encyclopedia", "url":"https://www.wikipedia.org", "favicon": "https://ru.wikipedia.org/static/apple-touch/wikipedia.png"},
-        {"title": "Reddit - Dive into anything", "url":"https://www.reddit.com", "favicon": "https://www.redditstatic.com/desktop2x/img/favicon/apple-icon-120x120.png"},
-        {"title": "My Tuner", "url":"https://mytuner-radio.com/", "favicon": "https://static2.mytuner.mobi/static/icons/apple-touch-icon-120x120-precomposed.png"},
-        {"title": "Instagram", "url":"https://www.instagram.com"},
-        {"title": "IMDb", "url":"https://www.imdb.com/", "favicon": "https://m.media-amazon.com/images/G/01/imdb/images-ANDW73HA/favicon_iPhone_retina_180x180._CB1582158069_UX60_.png"},
-        {"title": "eBay", "url":"https://www.ebay.com/", "favicon": "https://www.ebay.com/apple-touch-icon.png"},
-        {"title": "Itch.io", "url":"https://itch.io/games/input-gamepad/platform-web", "favicon": "https://itch.io/static/images/itchio-square-144.png"},
-        {"title": "BBC News", "url":"https://www.bbc.com/news", "favicon": "https://www.bbc.com/apple-touch-icon-120x120-precomposed.png"}
+        {"title": "Google", "url":"https://www.google.com", "favicon": "favicons/google.png"},
+        {"title": "YouTube", "url":"https://www.youtube.com", "favicon": "https://www.youtube.com/favicon.ico"}
     ];
+}
+
+function preconnectUrl(urlStr) {
+    try {
+        var origin = new URL(urlStr).origin;
+        if (!document.head.querySelector('link[rel="preconnect"][href="' + origin + '"]')) {
+            var linkEl = document.createElement('link');
+            linkEl.rel = 'preconnect';
+            linkEl.href = origin;
+            document.head.appendChild(linkEl);
+        }
+    } catch (e) {}
 }
 
 function renderLinks(mode, linksArray) {
@@ -155,6 +167,15 @@ function renderLinks(mode, linksArray) {
                 //titles come from the pages: text, not markup
                 titleElement.textContent = link.title;
                 descriptionElement.textContent = link.description ? link.description : link.url;
+                suggElement.classList.remove("add-tile");
+                preconnectUrl(link.url);
+            } else if (homePageLinksMode == "BOOKMARKS") {
+                icon.dataset.pageUrl = "";
+                icon.src = "favicons/custom.png";
+                icon.style.filter = "";
+                titleElement.textContent = "+ เพิ่มทางลัด";
+                descriptionElement.textContent = "แตะเพื่อเพิ่มบุ๊กมาร์ก";
+                suggElement.classList.add("add-tile");
             } else {
                 icon.dataset.pageUrl = "";
                 icon.src = "ic_not_available.svg";
@@ -162,6 +183,7 @@ function renderLinks(mode, linksArray) {
                 icon.style.filter = "invert(1)";
                 titleElement.textContent = "\u00a0";
                 descriptionElement.textContent = "\u00a0";
+                suggElement.classList.remove("add-tile");
             }
 
             titleElement.classList.toggle("empty", !link);

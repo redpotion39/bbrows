@@ -197,6 +197,9 @@ open class WebViewEx(context: Context, val callback: Callback, val jsInterface: 
             javaScriptCanOpenWindowsAutomatically = false
             setSupportMultipleWindows(true)
             setNeedInitialFocus(false)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                offscreenPreRaster = true
+            }
 
             if (config.webEngineDebug) {
                 setWebContentsDebuggingEnabled(true)
@@ -449,6 +452,9 @@ open class WebViewEx(context: Context, val callback: Callback, val jsInterface: 
                 }
                 callback.onPageFinished(url)
                 evaluateJavascript(getGenericJSInjects(), null)
+                if (config.turboLiteMode) {
+                    evaluateJavascript(com.phlox.tvwebbrowser.activity.main.TvWowFeatures.TURBO_LITE_JS, null)
+                }
                 mediaControls.onPageFinished()
                 elementHiding.onPageFinished()
             }

@@ -70,8 +70,16 @@ class FavoritesRepository(private val dao: FavoritesDao) {
      * The bookmarks the built-in home page shows: those right in the [folder] (not in its folders), or those of
      * [HOME_PAGE] when the folder is gone
      */
-    suspend fun homePageLinkBookmarks(folder: Long): List<FavoriteItem> =
-        children(existingFolder(folder)).filter { !it.isFolder }
+    suspend fun homePageLinkBookmarks(folder: Long): List<FavoriteItem> {
+        val folderItems = children(existingFolder(folder)).filter { !it.isFolder }
+        if (folder == HOME_PAGE) {
+            val rootBookmarks = dao.getChildren(ROOT).filter { !it.isFolder }
+            val existingUrls = folderItems.mapNotNull { it.url }.toSet()
+            val extra = rootBookmarks.filter { it.url !in existingUrls }
+            return folderItems + extra
+        }
+        return folderItems
+    }
 
     /**
      * The bookmarks of the channel of the TV home screen, in the order the bookmarks screens show them, each

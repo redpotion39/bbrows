@@ -1,4 +1,4 @@
-<resources>
+﻿<resources>
     <string name="app_name">Bbrows: TV Web Browser</string>
     <string name="app_name_short" translatable="false">Bbrows</string>
     <string name="error">Error</string>
@@ -19,6 +19,31 @@
     <string name="forward">Forward</string>
     <string name="incognito">Incognito</string>
     <string name="bookmark_added">Bookmark added</string>
+    <string name="bookmark_removed">Bookmark removed</string>
+    <string name="free_ram">Free RAM / Speed Boost</string>
+    <string name="free_ram_success">RAM cleaned: %s MB freed</string>
+    <string name="domain_lock_enable">Lock Domain (Anti-Redirect)</string>
+    <string name="domain_lock_disable">Unlock Domain</string>
+    <string name="domain_lock_enabled_msg">Anti-Redirect Shield ON: locked to %s</string>
+    <string name="domain_lock_disabled_msg">Anti-Redirect Shield OFF</string>
+    <string name="reader_mode">TV Reader Mode</string>
+    <string name="reader_mode_on">Reader Mode enabled</string>
+    <string name="reader_mode_off">Reader Mode closed</string>
+    <string name="tts_read_aloud">Read Page Aloud (TTS)</string>
+    <string name="tts_started">Reading aloud…</string>
+    <string name="tts_stopped">Stopped reading</string>
+    <string name="tts_no_text">No readable text found on page</string>
+    <string name="tts_unavailable">Text-to-Speech unavailable on this TV</string>
+    <string name="night_eye_enable">Night Eye Shield: ON</string>
+    <string name="night_eye_disable">Night Eye Shield: OFF</string>
+    <string name="night_eye_on_msg">Night Eye blue-light filter ON</string>
+    <string name="night_eye_off_msg">Night Eye blue-light filter OFF</string>
+    <string name="turbo_lite_enable">Turbo Lite Mode: ON</string>
+    <string name="turbo_lite_disable">Turbo Lite Mode: OFF</string>
+    <string name="turbo_lite_on_msg">Turbo Lite Mode ON (faster low-RAM rendering)</string>
+    <string name="turbo_lite_off_msg">Turbo Lite Mode OFF</string>
+    <string name="handoff_qr_title">Continue on Phone</string>
+    <string name="handoff_qr_caption">Scan this QR code with your phone to open this page on mobile</string>
     <string name="close_all">Close all</string>
     <!-- the address pill of the phone bar on the home page -->
     <string name="search_or_type_url">Search or type URL</string>
@@ -211,7 +236,7 @@
     <string name="clear">Clear</string>
     <string name="install">Install</string>
     <string name="turn_on_unknown_sources">Please turn on \"Unknown sources\" system setting</string>
-    <string name="turn_on_unknown_sources_for_app">Please allow TV Bro to install apps from \"Unknown sources\" in system settings</string>
+    <string name="turn_on_unknown_sources_for_app">Please allow Bbrows to install apps from \"Unknown sources\" in system settings</string>
     <string name="voice_search_not_found">Voice search not found</string>
     <string name="new_version_dialog_title">New version available</string>
     <string name="later">Later</string>
@@ -283,9 +308,9 @@
     <!-- the videos of the page other apps can play (the button of the TV bar and its panel) -->
     <string name="videos_on_page">Videos on the page</string>
     <string name="no_videos_on_page">No videos found on this page. Videos that the page plays only itself (protected or streamed through its own code) can not be opened in other apps.</string>
-    <string name="play_in_built_in_player">Play in TV Bro player</string>
+    <string name="play_in_built_in_player">Play in Bbrows player</string>
     <!-- the built-in player of the app (its name; on the seek bar of a fullscreen video, after the key cap of Down) -->
-    <string name="built_in_player">TV Bro player</string>
+    <string name="built_in_player">Bbrows player</string>
     <!-- on the seek bar of the built-in player, after the key cap of Down: the menu it opens -->
     <string name="player_menu_hint">Video settings</string>
     <!-- on the seek bar of a fullscreen video, after the key cap of Up: it shows the cursor for the controls of the page -->
@@ -293,7 +318,7 @@
     <!-- the player of the page (on the seek bar of the built-in player, after the key cap of Up: back to it) -->
     <string name="site_player">Site player</string>
     <!-- a toast at the top when the built-in player opens, its first few times -->
-    <string name="player_opened">Video opened in TV Bro player: smoother and in the full resolution of the screen</string>
+    <string name="player_opened">Video opened in Bbrows player: smoother and in the full resolution of the screen</string>
     <!-- a toast when the built-in player that opened by itself could not start: the page plays the video on -->
     <string name="player_fallback">The video will continue in the site player</string>
     <!-- the video settings of the built-in player: which player gets the fullscreen videos of the site of the page -->
@@ -301,9 +326,9 @@
     <!-- its options; the default one tells what the default is now (player_default_built_in, player_default_site) -->
     <string name="player_for_site_default">Default</string>
     <!-- the short values of the row: the built-in player, the player of the site -->
-    <string name="player_for_site_built_in" translatable="false">TV Bro</string>
+    <string name="player_for_site_built_in" translatable="false">Bbrows</string>
     <string name="player_for_site_site">Site</string>
-    <string name="player_default_built_in">Now: TV Bro player</string>
+    <string name="player_default_built_in">Now: Bbrows player</string>
     <string name="player_default_site">Now: site player</string>
     <!-- under the options: what each player is good for -->
     <string name="built_in_player_summary">Smoother, in the full resolution of the screen</string>
@@ -324,21 +349,21 @@
     <string name="player_error_format">This video format is not supported</string>
     <string name="player_error_protected">The video is protected from copying</string>
     <string name="player_error_other">Playback error: %s</string>
-    <string name="choose_video_caption">Choose the one that plays: it goes on from %s in TV Bro player</string>
+    <string name="choose_video_caption">Choose the one that plays: it goes on from %s in Bbrows player</string>
     <string name="choose_video_same_length">Same length</string>
     <string name="choose_video_stay">Stay in the site player</string>
     <!-- the built-in player -->
     <string name="player_error">This video can not be played</string>
     <string name="player_back_to_page">Back to the page</string>
     <!-- the TV hint about a found video that plays in the page -->
-    <string name="page_video_hint">Watch in TV Bro player</string>
+    <string name="page_video_hint">Watch in Bbrows player</string>
     <!-- the name of the Back key of the remote, drawn on a key cap -->
     <string name="key_back">Back</string>
     <string name="key_down" translatable="false">↓</string>
     <string name="key_up" translatable="false">↑</string>
     <string name="playing_on_page">Playing on the page</string>
     <string name="settings_match_frame_rate">Match the frame rate of videos</string>
-    <string name="settings_match_frame_rate_summary">TV Bro player switches the TV to the frame rate of the video, so that it plays smoothly. The screen goes black for a moment when it switches.</string>
+    <string name="settings_match_frame_rate_summary">Bbrows player switches the TV to the frame rate of the video, so that it plays smoothly. The screen goes black for a moment when it switches.</string>
     <!-- the video settings of the built-in player: the names of its rows and options -->
     <string name="player_quality">Quality</string>
     <string name="player_audio">Audio</string>
@@ -417,7 +442,7 @@
         <item>Dark</item>
     </array>
     <string name="incognito_mode">Incognito mode</string>
-    <string name="incognito_mode_hint">Now you can browse privately, and other people who use this device won’t see your activity. TV Bro won’t save your browsing history, cookies and site data, or information entered in forms.\n\nHowever, downloads and bookmarks will be saved. Your activity might still be visible to websites you visit, your organization or internet service provider.</string>
+    <string name="incognito_mode_hint">Now you can browse privately, and other people who use this device won’t see your activity. Bbrows won’t save your browsing history, cookies and site data, or information entered in forms.\n\nHowever, downloads and bookmarks will be saved. Your activity might still be visible to websites you visit, your organization or internet service provider.</string>
     <string name="don_t_show_again">Don\'t show again</string>
     <string name="why_icon_changed">Why did the icon change?</string>
     <string name="block_popups">Popup blocking</string>
@@ -453,7 +478,7 @@
     <string name="external_app_open_error">Cannot find a suitable app</string>
     <string name="home_page">Home page</string>
     <array name="home_page_modes">
-        <item>TV Bro Home</item>
+        <item>Bbrows Home</item>
         <item>Search engine</item>
         <item>Custom</item>
         <item>Blank</item>
@@ -486,11 +511,11 @@
     <string name="local_network_access_denied">Local network access denied</string>
 
     <!-- sending to the TV from other devices: the title of its screen and its row of the ⋮ menu of the TV bar -->
-    <string name="send_title">Send to this TV</string>
-    <string name="send_scan_title">Scan with a phone</string>
-    <string name="send_or_open">or open on any device:</string>
+    <string name="send_title">Type with Phone &amp; Remote</string>
+    <string name="send_scan_title">Scan with Phone to Type</string>
+    <string name="send_or_open">or open in any mobile browser:</string>
     <string name="send_code_waiting">Getting a short address…</string>
-    <string name="send_what">Point the camera of a phone or tablet at the code and open the link in any browser. Addresses and searches you send open here in a new tab, files go to the downloads.</string>
+    <string name="send_what">Point the camera of a smartphone or tablet at the QR code. You can easily type text, search, paste links, and navigate the TV directly from your mobile keyboard!</string>
     <string name="send_cloud_connecting">Connecting to the server…</string>
     <string name="send_cloud_listening">Ready: waiting for what you send</string>
     <string name="send_cloud_offline">No connection to the server: only devices on the network of the TV can send</string>
@@ -510,7 +535,7 @@
     <string name="send_file_received">%s received</string>
     <string name="send_file_not_saved">Cannot save %s</string>
     <!-- the page of the TV, opened in a browser of another device of the same network -->
-    <string name="send_page_title">Send to TV Bro</string>
+    <string name="send_page_title">Send to Bbrows</string>
     <string name="send_page_open_title">Open on the TV</string>
     <string name="send_page_address_hint">Address or search</string>
     <string name="send_page_send">Send</string>
@@ -521,7 +546,7 @@
     <!-- %1$s: the file, %2$s: 45% -->
     <string name="send_page_sending">Sending %1$s… %2$s</string>
     <string name="send_page_saved">%1$s is saved on the TV</string>
-    <string name="send_page_need_permission">Allow TV Bro on the TV to save files, then send again</string>
+    <string name="send_page_need_permission">Allow Bbrows on the TV to save files, then send again</string>
     <string name="send_page_storage">The TV cannot save the file</string>
     <string name="send_page_cancelled">The file was cancelled on the TV</string>
     <string name="send_page_failed">Something went wrong</string>
@@ -551,7 +576,7 @@
     <string name="settings_summary_proxy_s">Proxy %s</string>
     <!-- marks a setting that applies after a restart of the app -->
     <string name="settings_after_restart">After restart</string>
-    <string name="settings_restart_message">Restart TV Bro to apply the changes</string>
+    <string name="settings_restart_message">Restart Bbrows to apply the changes</string>
     <string name="settings_restart_now">Restart now</string>
     <string name="settings_turn_on">Turn on</string>
     <!-- the state of a switch, for accessibility -->
@@ -608,7 +633,7 @@
     <string name="settings_autoplay_summary">Videos and sounds start without a click</string>
     <string name="settings_group_videos">Videos</string>
     <string name="settings_video_hint">Hint about videos found on the page</string>
-    <string name="settings_video_hint_summary">When such a video starts to play on the page, a short note tells that TV Bro player can play it</string>
+    <string name="settings_video_hint_summary">When such a video starts to play on the page, a short note tells that Bbrows player can play it</string>
     <string name="settings_group_ad_blocking">Ad blocking</string>
     <string name="settings_block_ads">Block ads</string>
     <string name="settings_block_ads_summary_tv">Each site can turn it off in its site panel</string>

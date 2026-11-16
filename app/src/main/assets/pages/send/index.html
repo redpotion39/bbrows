@@ -109,6 +109,42 @@ progress { width: 100%; margin-top: 8px; }
     color: var(--ink);
     border: 1px solid var(--line);
 }
+.dpad-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    margin-top: 14px;
+}
+.dpad-row {
+    display: flex;
+    gap: 6px;
+}
+.dpad-btn {
+    width: 60px;
+    height: 48px;
+    background: var(--control);
+    color: var(--ink);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    font-size: 18px;
+    font-weight: bold;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    user-select: none;
+}
+.dpad-btn:active {
+    background: var(--accent);
+    color: var(--on-accent);
+}
+.dpad-btn.dpad-center {
+    width: 72px;
+    background: var(--accent);
+    color: var(--on-accent);
+    font-size: 16px;
+}
 </style>
 </head>
 <body
@@ -151,6 +187,19 @@ progress { width: 100%; margin-top: 8px; }
       <button type="button" class="btn-secondary" id="remoteBack">{{remote_back}}</button>
       <input type="text" id="remoteInput" autocomplete="off" placeholder="{{remote_type_hint}}">
       <button type="button" id="remoteTypeBtn">{{send}}</button>
+    </div>
+    <div class="dpad-container">
+      <div class="dpad-row">
+        <button type="button" class="dpad-btn" id="dpadUp" aria-label="Up">▲</button>
+      </div>
+      <div class="dpad-row">
+        <button type="button" class="dpad-btn" id="dpadLeft" aria-label="Left">◀</button>
+        <button type="button" class="dpad-btn dpad-center" id="dpadOk" aria-label="OK">OK</button>
+        <button type="button" class="dpad-btn" id="dpadRight" aria-label="Right">▶</button>
+      </div>
+      <div class="dpad-row">
+        <button type="button" class="dpad-btn" id="dpadDown" aria-label="Down">▼</button>
+      </div>
     </div>
   </section>
 </main>

@@ -424,7 +424,14 @@ class PhoneShell(private val host: BrowserShell.Host) : BrowserShell {
         vb.progressBarGeneric.visibility = if (busy) View.VISIBLE else View.GONE
     }
 
-    override fun onTabsLoaded() {}
+    override fun onTabsLoaded() {
+        vb.vNightEyeOverlay.visibility = if (AppContext.provideConfig().nightEyeFilter) View.VISIBLE else View.GONE
+        if (vb.flSplash.visibility == View.VISIBLE) {
+            vb.flSplash.animate().alpha(0f).setDuration(300).withEndAction {
+                vb.flSplash.visibility = View.GONE
+            }.start()
+        }
+    }
 
     /** Touch only: the page gets the touches, the virtual cursor is never shown */
     override fun onTabViewCreated(tab: BrowserTab) {

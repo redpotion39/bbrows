@@ -281,4 +281,88 @@
         android:focusableInTouchMode="true"
         />
 
+    <!-- Live RAM & AdBlock Mini-HUD (shown below action bar when menu overlay is visible) -->
+    <TextView
+        android:id="@+id/tvRamHud"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/rlActionBar"
+        android:layout_alignParentEnd="true"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="@dimen/ds_space_screen_x"
+        android:paddingStart="12dp"
+        android:paddingEnd="12dp"
+        android:paddingTop="5dp"
+        android:paddingBottom="5dp"
+        android:background="@drawable/ds_menu_bg"
+        android:textColor="?attr/tbColorDsInk"
+        android:textSize="12sp"
+        android:fontFamily="sans-serif-medium"
+        android:elevation="6dp"
+        android:clickable="true"
+        android:focusable="false"
+        android:visibility="gone"
+        tools:text="RAM: 540MB Free • Ads: 12" />
+
+    <!-- Night Eye Shield warm blue-light filter overlay (passes all touches and focus through) -->
+    <View
+        android:id="@+id/vNightEyeOverlay"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#26FF8800"
+        android:elevation="25dp"
+        android:clickable="false"
+        android:focusable="false"
+        android:importantForAccessibility="no"
+        android:visibility="gone" />
+
+    <!-- Startup Splash Overlay with Bbrows Logo -->
+    <FrameLayout
+        android:id="@+id/flSplash"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#0B1120"
+        android:elevation="30dp"
+        android:clickable="true"
+        android:focusable="false">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <ImageView
+                android:layout_width="104dp"
+                android:layout_height="104dp"
+                android:src="@mipmap/ic_launcher"
+                android:importantForAccessibility="no" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="Bbrows"
+                android:textColor="#FFFFFF"
+                android:textSize="28sp"
+                android:fontFamily="sans-serif-medium" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="Fast TV Web Browser"
+                android:textColor="#94A3B8"
+                android:textSize="13sp" />
+
+            <ProgressBar
+                style="?android:attr/progressBarStyleSmall"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_marginTop="20dp"
+                android:indeterminateTint="#38BDF8" />
+        </LinearLayout>
+    </FrameLayout>
+
 </RelativeLayout>

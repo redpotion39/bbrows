@@ -28,12 +28,23 @@ class TabPolicies(
     }
 
     override fun shouldBlockNewWindow(dialog: Boolean, userGesture: Boolean): Boolean {
+        if (tab.isDomainLocked) return true
         val hostConfig = controller.findHostConfig(tab)
         return PopupBlockPolicy.shouldBlockNewWindow(hostConfig?.popupBlockLevel, dialog, userGesture)
     }
 
     override fun shouldBlockHijackRedirect(targetUrl: String): Boolean {
         if (tab.url == Config.HOME_PAGE_URL) return false
+        if (tab.isDomainLocked) {
+            val locked = tab.domainLockedHost ?: return false
+            val targetHost = PopupBlockPolicy.hostOf(targetUrl)
+            if (targetHost != null && !targetHost.equals(locked, ignoreCase = true) &&
+                !targetHost.endsWith(".$locked", ignoreCase = true)) {
+                controller.onRedirectBlocked(tab, targetHost)
+                return true
+            }
+            return false
+        }
         val hostConfig = controller.findHostConfig(tab)
         val hasActiveVideo = tab.isWebEngineCreated && tab.webEngine.mediaPlayback?.mediaState?.value?.playing == true
         val blocked = PopupBlockPolicy.shouldBlockCrossDomainHijack(

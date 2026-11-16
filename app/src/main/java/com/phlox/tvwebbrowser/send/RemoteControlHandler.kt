@@ -35,6 +35,14 @@ object RemoteControlHandler {
                 wv.evaluateJavascript("window.scrollBy(${-dx}, ${-dy});")
             }
             is RemoteCommand.Back -> onBack()
+            is RemoteCommand.Key -> {
+                onHideSendScreen()
+                val delegate = engine?.virtualCursor?.getCursorDrawerDelegate()
+                if (delegate != null) {
+                    delegate.dispatchKeyEvent(KeyEvent(KeyEvent.ACTION_DOWN, cmd.keyCode))
+                    delegate.dispatchKeyEvent(KeyEvent(KeyEvent.ACTION_UP, cmd.keyCode))
+                }
+            }
             is RemoteCommand.InputText -> {
                 onHideSendScreen()
                 val wv = engine ?: return

@@ -3,6 +3,7 @@ package com.phlox.tvwebbrowser
 import android.view.ContextThemeWrapper
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.content.ContextCompat
 import com.phlox.tvwebbrowser.activity.main.view.PlayerPanelView
 import com.phlox.tvwebbrowser.activity.main.view.PlayerScreenView
@@ -28,17 +29,27 @@ class VideoThemeTest {
 
     @Test
     fun theLightThemeGetsTheDarkTokensOverVideo() {
-        assertNotEquals(color(R.color.ds_dark_menu), activity.themeColor(R.attr.tbColorDsMenu))
-        assertEquals(0xFF2F2F2F.toInt(), video.themeColor(R.attr.tbColorDsMenu))
-        assertEquals(0xFF1B1B1B.toInt(), video.themeColor(R.attr.tbColorDsSurface))
-        assertEquals(0xFF323940.toInt(), video.themeColor(R.attr.tbColorDsControl))
-        assertEquals(0xFF003E4F.toInt(), video.themeColor(R.attr.tbColorDsControlFocused))
-        assertEquals(0xFFF8F9FA.toInt(), video.themeColor(R.attr.tbColorDsInk))
-        assertEquals(0xFFBBBBBB.toInt(), video.themeColor(R.attr.tbColorDsInkFaint))
-        assertEquals(0xFFFDFDFD.toInt(), video.themeColor(R.attr.tbColorDsIcon))
-        //the tokens that are the same in both themes come from the activity theme
-        assertEquals(0xFF5FACFF.toInt(), video.themeColor(R.attr.tbColorDsSelected))
-        assertEquals(0xFFA5D0FF.toInt(), video.themeColor(R.attr.tbColorDsFocus))
+        val prevMode = AppCompatDelegate.getDefaultNightMode()
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+        try {
+            val lightActivity = Robolectric.buildActivity(AppCompatActivity::class.java)
+                .also { it.get().setTheme(R.style.AppTheme) }
+                .setup().get()
+            val lightVideo = ContextThemeWrapper(lightActivity, R.style.ThemeOverlay_TVBro_Video)
+            assertNotEquals(color(R.color.ds_dark_menu), lightActivity.themeColor(R.attr.tbColorDsMenu))
+            assertEquals(0xFF2F2F2F.toInt(), lightVideo.themeColor(R.attr.tbColorDsMenu))
+            assertEquals(0xFF1B1B1B.toInt(), lightVideo.themeColor(R.attr.tbColorDsSurface))
+            assertEquals(0xFF323940.toInt(), lightVideo.themeColor(R.attr.tbColorDsControl))
+            assertEquals(0xFF003E4F.toInt(), lightVideo.themeColor(R.attr.tbColorDsControlFocused))
+            assertEquals(0xFFF8F9FA.toInt(), lightVideo.themeColor(R.attr.tbColorDsInk))
+            assertEquals(0xFFBBBBBB.toInt(), lightVideo.themeColor(R.attr.tbColorDsInkFaint))
+            assertEquals(0xFFFDFDFD.toInt(), lightVideo.themeColor(R.attr.tbColorDsIcon))
+            //the tokens that are the same in both themes come from the activity theme
+            assertEquals(0xFF5FACFF.toInt(), lightVideo.themeColor(R.attr.tbColorDsSelected))
+            assertEquals(0xFFA5D0FF.toInt(), lightVideo.themeColor(R.attr.tbColorDsFocus))
+        } finally {
+            AppCompatDelegate.setDefaultNightMode(prevMode)
+        }
     }
 
     @Test

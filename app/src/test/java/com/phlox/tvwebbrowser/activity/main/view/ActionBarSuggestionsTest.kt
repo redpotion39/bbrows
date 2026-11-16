@@ -84,6 +84,8 @@ class ActionBarSuggestionsTest {
             override fun onUrlInputDone() {}
             override fun toggleIncognitoMode() {}
             override fun showSitePanel() {}
+            override fun quickToggleBookmark() {}
+            override fun showSendScreen() {}
         }
         idle()
     }

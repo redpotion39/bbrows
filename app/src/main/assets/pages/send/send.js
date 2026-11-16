@@ -186,4 +186,14 @@
             if (e.key === 'Enter') { e.preventDefault(); submitRemoteInput(); }
         });
     }
+
+    var keyMap = { dpadUp: 'up', dpadDown: 'down', dpadLeft: 'left', dpadRight: 'right', dpadOk: 'ok' };
+    ['dpadUp', 'dpadDown', 'dpadLeft', 'dpadRight', 'dpadOk'].forEach(function(id) {
+        var btn = document.getElementById(id);
+        if (btn) {
+            btn.addEventListener('click', function() {
+                sendRemote({ type: 'key', key: keyMap[id] });
+            });
+        }
+    });
 })();

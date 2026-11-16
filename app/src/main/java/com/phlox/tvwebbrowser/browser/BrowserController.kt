@@ -1,6 +1,8 @@
 package com.phlox.tvwebbrowser.browser
 
 import android.Manifest
+import android.app.ActivityManager
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
@@ -309,12 +311,48 @@ class BrowserController : ActiveModel() {
         warmTabOrder.retainAll { it == currentTab.value }
     }
 
+    var maxWarmTabs: Int = MAX_WARM_TABS
+        private set
+
+    /** Detects device total memory and sets dynamic tab warm limit to avoid OOM on low-spec TV boxes */
+    fun detectAndApplyRamProfile(context: Context) {
+        try {
+            val am = context.getSystemService(Context.ACTIVITY_SERVICE) as? ActivityManager ?: return
+            val memInfo = ActivityManager.MemoryInfo()
+            am.getMemoryInfo(memInfo)
+            val totalRamMb = memInfo.totalMem / (1024 * 1024)
+            maxWarmTabs = when {
+                memInfo.lowMemory || totalRamMb <= 1200 -> 1 // 1GB TV boxes / sticks
+                totalRamMb <= 2200 -> 2                      // 2GB TV devices
+                totalRamMb <= 3500 -> 3                      // 3GB TV devices
+                else -> 4                                    // 4GB+ flagship TVs
+            }
+            Log.i(TAG, "RAM profile detected: total RAM ${totalRamMb}MB, lowMemory=${memInfo.lowMemory}, dynamic maxWarmTabs=$maxWarmTabs")
+            trimExcessBackgroundTabs()
+        } catch (e: Exception) {
+            maxWarmTabs = 2
+        }
+    }
+
+    /** Manually triggers deep RAM clean and returns amount of freed memory in MB */
+    fun freeRam(context: Context): Long {
+        val am = context.getSystemService(Context.ACTIVITY_SERVICE) as? ActivityManager
+        val memBefore = ActivityManager.MemoryInfo().apply { am?.getMemoryInfo(this) }.availMem
+
+        trimMemory()
+        System.gc()
+
+        val memAfter = ActivityManager.MemoryInfo().apply { am?.getMemoryInfo(this) }.availMem
+        val freedBytes = memAfter - memBefore
+        return (freedBytes.coerceAtLeast(0L)) / (1024 * 1024)
+    }
+
     /** Trims oldest background tabs when too many live engine views are kept in memory at once */
     private fun trimExcessBackgroundTabs() {
         var liveCount = tabsStates.count { it.isWebEngineCreated && it.webEngine.getView() != null }
-        if (liveCount <= MAX_WARM_TABS) return
+        if (liveCount <= maxWarmTabs) return
         val iterator = warmTabOrder.iterator()
-        while (iterator.hasNext() && liveCount > MAX_WARM_TABS) {
+        while (iterator.hasNext() && liveCount > maxWarmTabs) {
             val candidate = iterator.next()
             if (candidate == currentTab.value || candidate.selected) continue
             if (candidate.isWebEngineCreated && candidate.webEngine.getView() != null) {

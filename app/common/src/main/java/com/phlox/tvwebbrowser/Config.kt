@@ -63,6 +63,10 @@ class Config(val prefs: SharedPreferences, private val credentialsPrefs: SharedP
             "webview_use_algorithmic_darkening_with_dark_ui_mode"
         const val WEB_ENGINE_DEBUG_KEY = "web_engine_debug"
         const val INITIAL_BOOKMARKS_SUGGESTIONS_LOADED = "initial_bookmarks_suggestions_loaded"
+        const val HOME_PAGE_CLEANED_V2_KEY = "home_page_cleaned_v2"
+        const val TURBO_LITE_MODE_KEY = "turbo_lite_mode"
+        const val NIGHT_EYE_FILTER_KEY = "night_eye_filter"
+        const val SHOW_RAM_HUD_KEY = "show_ram_hud"
         const val ADBLOCK_ENABLED_PREF_KEY = "adblock_enabled"
         const val BLOCK_VIDEO_REDIRECTS_KEY = "block_video_redirects"
         const val TRACKING_PROTECTION_KEY = "tracking_protection"
@@ -335,8 +339,8 @@ class Config(val prefs: SharedPreferences, private val credentialsPrefs: SharedP
             ).apply()
         }
 
-    var theme = object : ObservableValue<Theme>(Theme.SYSTEM) {
-        override var value: Theme = Theme.entries[prefs.getInt(THEME_KEY, 0)]
+    var theme = object : ObservableValue<Theme>(Theme.BLACK) {
+        override var value: Theme = Theme.entries.getOrElse(prefs.getInt(THEME_KEY, Theme.BLACK.ordinal)) { Theme.BLACK }
             set(value) {
                 prefs.edit().putInt(THEME_KEY, value.ordinal).apply()
                 field = value
@@ -660,9 +664,33 @@ class Config(val prefs: SharedPreferences, private val credentialsPrefs: SharedP
         }
 
     var cursorMagneticSnap: Boolean
-        get() = prefs.getBoolean(CURSOR_MAGNETIC_SNAP_KEY, false)
+        get() = prefs.getBoolean(CURSOR_MAGNETIC_SNAP_KEY, true)
         set(value) {
             prefs.edit().putBoolean(CURSOR_MAGNETIC_SNAP_KEY, value).apply()
+        }
+
+    var homePageCleanedV2: Boolean
+        get() = prefs.getBoolean(HOME_PAGE_CLEANED_V2_KEY, false)
+        set(value) {
+            prefs.edit().putBoolean(HOME_PAGE_CLEANED_V2_KEY, value).apply()
+        }
+
+    var turboLiteMode: Boolean
+        get() = prefs.getBoolean(TURBO_LITE_MODE_KEY, false)
+        set(value) {
+            prefs.edit().putBoolean(TURBO_LITE_MODE_KEY, value).apply()
+        }
+
+    var nightEyeFilter: Boolean
+        get() = prefs.getBoolean(NIGHT_EYE_FILTER_KEY, false)
+        set(value) {
+            prefs.edit().putBoolean(NIGHT_EYE_FILTER_KEY, value).apply()
+        }
+
+    var showRamHud: Boolean
+        get() = prefs.getBoolean(SHOW_RAM_HUD_KEY, true)
+        set(value) {
+            prefs.edit().putBoolean(SHOW_RAM_HUD_KEY, value).apply()
         }
 
     var remoteHintShown: Boolean

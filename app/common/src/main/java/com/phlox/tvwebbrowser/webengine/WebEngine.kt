@@ -38,6 +38,10 @@ interface WebEngine {
     fun zoomOut()
     fun zoomBy(zoomBy: Float)
     fun evaluateJavascript(script: String)
+    fun evaluateJavascriptWithResult(script: String, callback: (String?) -> Unit) {
+        evaluateJavascript(script)
+        callback(null)
+    }
     fun setNetworkAvailable(connected: Boolean)
     fun getView(): View?
     @Throws(Exception::class)

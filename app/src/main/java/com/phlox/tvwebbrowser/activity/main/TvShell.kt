@@ -1,10 +1,13 @@
 package com.phlox.tvwebbrowser.activity.main
 
 import android.Manifest
+import android.app.ActivityManager
+import android.content.Context
 import android.content.pm.ActivityInfo
 import android.content.pm.PackageManager
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
+import androidx.core.net.toUri
 import com.phlox.tvwebbrowser.utils.launchForResult
 import android.os.Build
 import android.os.Handler
@@ -33,6 +36,8 @@ import com.phlox.tvwebbrowser.AppContext
 import com.phlox.tvwebbrowser.Config
 import com.phlox.tvwebbrowser.TVBro
 import com.phlox.tvwebbrowser.R
+import com.phlox.tvwebbrowser.data.FavoritesRepository
+import com.phlox.tvwebbrowser.model.FavoriteItem
 import com.phlox.tvwebbrowser.activity.PictureInPictureActivity
 import com.phlox.tvwebbrowser.activity.main.view.ActionBar
 import com.phlox.tvwebbrowser.activity.main.view.BookmarksPanelView
@@ -520,10 +525,70 @@ class TvShell(private val host: BrowserShell.Host) : BrowserShell, ActionBar.Cal
 
     /** Under the ⋮ button, its end under the end of the group of the button, as the panels of the bar */
     override fun showMoreMenu() {
-        val items = listOf(
+        val tab = controller.currentTab.value
+        val cfg = AppContext.provideConfig()
+        val items = mutableListOf(
             PopupMenuView.Item(R.drawable.ic_search, activity.getString(R.string.find_in_page)) { showFindInPage() },
-            PopupMenuView.Item(R.drawable.ic_history, activity.getString(R.string.history)) { showHistory() },
             PopupMenuView.Item(R.drawable.ic_devices, activity.getString(R.string.send_title)) { showSendScreen() },
+            PopupMenuView.Item(R.drawable.ic_share, activity.getString(R.string.handoff_qr_title)) {
+                TvWowFeatures.showQrForCurrentPage(activity, tab)
+            },
+            PopupMenuView.Item(R.drawable.ic_document, activity.getString(R.string.reader_mode)) {
+                val engine = tab?.webEngine ?: return@Item
+                hideMenuOverlay()
+                TvWowFeatures.toggleReaderMode(engine) { enabled ->
+                    NotificationView.show(vb.rlRoot, R.drawable.ic_document,
+                        activity.getString(if (enabled) R.string.reader_mode_on else R.string.reader_mode_off))
+                }
+            },
+            PopupMenuView.Item(R.drawable.ic_audio_track, activity.getString(R.string.tts_read_aloud)) {
+                val engine = tab?.webEngine ?: return@Item
+                hideMenuOverlay()
+                TvWowFeatures.toggleSpeakPage(activity, engine) { msg ->
+                    NotificationView.show(vb.rlRoot, R.drawable.ic_audio_track, msg)
+                }
+            },
+            PopupMenuView.Item(
+                R.drawable.ic_lock,
+                activity.getString(if (tab?.isDomainLocked == true) R.string.domain_lock_disable else R.string.domain_lock_enable)
+            ) {
+                if (tab == null) return@Item
+                if (tab.isDomainLocked) {
+                    tab.domainLockedHost = null
+                    NotificationView.show(vb.rlRoot, R.drawable.ic_lock, activity.getString(R.string.domain_lock_disabled_msg))
+                } else {
+                    val host = tab.url.toUri().host
+                    if (!host.isNullOrEmpty()) {
+                        tab.domainLockedHost = host
+                        NotificationView.show(vb.rlRoot, R.drawable.ic_lock,
+                            activity.getString(R.string.domain_lock_enabled_msg, host))
+                    }
+                }
+            },
+            PopupMenuView.Item(
+                R.drawable.ic_appearance,
+                activity.getString(if (cfg.nightEyeFilter) R.string.night_eye_disable else R.string.night_eye_enable)
+            ) {
+                cfg.nightEyeFilter = !cfg.nightEyeFilter
+                vb.vNightEyeOverlay.isVisible = cfg.nightEyeFilter
+                NotificationView.show(vb.rlRoot, R.drawable.ic_appearance,
+                    activity.getString(if (cfg.nightEyeFilter) R.string.night_eye_on_msg else R.string.night_eye_off_msg))
+            },
+            PopupMenuView.Item(
+                R.drawable.ic_speed,
+                activity.getString(if (cfg.turboLiteMode) R.string.turbo_lite_disable else R.string.turbo_lite_enable)
+            ) {
+                cfg.turboLiteMode = !cfg.turboLiteMode
+                NotificationView.show(vb.rlRoot, R.drawable.ic_speed,
+                    activity.getString(if (cfg.turboLiteMode) R.string.turbo_lite_on_msg else R.string.turbo_lite_off_msg))
+            },
+            PopupMenuView.Item(R.drawable.ic_refresh, activity.getString(R.string.free_ram)) {
+                val freed = controller.freeRam(activity)
+                updateRamHud()
+                NotificationView.show(vb.rlRoot, R.drawable.ic_refresh,
+                    activity.getString(R.string.free_ram_success, freed.toString()))
+            },
+            PopupMenuView.Item(R.drawable.ic_history, activity.getString(R.string.history)) { showHistory() },
             PopupMenuView.Item(R.drawable.ic_info, activity.getString(R.string.remote_guide_title)) { RemoteHintDialog.show(activity) },
             PopupMenuView.Item(R.drawable.ic_settings, activity.getString(R.string.settings)) { showSettings() }
         )
@@ -534,6 +599,28 @@ class TvShell(private val host: BrowserShell.Host) : BrowserShell, ActionBar.Cal
 
     override fun showFavorites() {
         vb.vBookmarksPanel.show(vb.vActionBar.favoritesButton, vb.vActionBar.functionsGroup)
+    }
+
+    override fun quickToggleBookmark() {
+        val tab = controller.currentTab.value ?: return
+        val info = BookmarksNavigator.PageInfo.of(tab) ?: return
+        lifecycleScope.launch {
+            val favorites = TVBro.container.data.favorites
+            val existing = favorites.findByUrl(info.url)
+            if (existing != null) {
+                favorites.delete(existing.id)
+                controller.homePageLinks.load()
+                NotificationView.show(vb.rlRoot, R.drawable.ic_favorites, activity.getString(R.string.bookmark_removed))
+            } else {
+                val item = FavoriteItem().apply {
+                    title = info.title.ifEmpty { info.url }
+                    url = info.url
+                }
+                favorites.add(item, FavoritesRepository.HOME_PAGE)
+                controller.homePageLinks.load()
+                NotificationView.show(vb.rlRoot, R.drawable.ic_favorites, activity.getString(R.string.bookmark_added))
+            }
+        }
     }
 
     private val bookmarksCallback = object : BookmarksNavigator.ShellCallback {
@@ -825,6 +912,21 @@ class TvShell(private val host: BrowserShell.Host) : BrowserShell, ActionBar.Cal
                 sentFiles.receive(name, mimeType, size, from).also { addReceived(name) }
 
             override fun onRemoteCommand(cmd: RemoteCommand) {
+                if (cmd is RemoteCommand.InputText) {
+                    if (vb.vSendScreen.isOpen) vb.vSendScreen.hide()
+                    if (vb.vFindBar.isVisible) {
+                        vb.vFindBar.setQuery(cmd.text)
+                        return
+                    }
+                    if (vb.rlActionBar.isVisible) {
+                        vb.vActionBar.setText(cmd.text)
+                        if (cmd.submit) {
+                            vb.vActionBar.submitText(cmd.text)
+                            hideMenuOverlay()
+                        }
+                        return
+                    }
+                }
                 RemoteControlHandler.handle(
                     cmd = cmd,
                     engine = controller.currentTab.value?.webEngine,
@@ -888,7 +990,7 @@ class TvShell(private val host: BrowserShell.Host) : BrowserShell, ActionBar.Cal
     }
 
     /** Android 17 asks the user before the app talks to devices of the local network */
-    private fun showSendScreen() {
+    override fun showSendScreen() {
         vb.vSendScreen.show()
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.CINNAMON_BUN && ContextCompat.checkSelfPermission(activity,
                 Manifest.permission.ACCESS_LOCAL_NETWORK) != PackageManager.PERMISSION_GRANTED) {
@@ -1060,6 +1162,13 @@ class TvShell(private val host: BrowserShell.Host) : BrowserShell, ActionBar.Cal
         vb.ivMiniatures.visibility = View.INVISIBLE
         vb.rlActionBar.visibility = View.INVISIBLE
         vb.progressBar.visibility = View.GONE
+        vb.vNightEyeOverlay.isVisible = AppContext.provideConfig().nightEyeFilter
+        vb.tvRamHud.setOnClickListener {
+            val freed = controller.freeRam(activity)
+            updateRamHud()
+            NotificationView.show(vb.rlRoot, R.drawable.ic_refresh,
+                activity.getString(R.string.free_ram_success, freed.toString()))
+        }
 
         vb.vTabs.listener = tabsListener
 
@@ -1095,6 +1204,7 @@ class TvShell(private val host: BrowserShell.Host) : BrowserShell, ActionBar.Cal
             override fun onDestroy(owner: LifecycleOwner) {
                 sendSession.close(abort = true)
                 vb.vPlayerScreen.close()
+                TvWowFeatures.shutdown()
             }
         })
         lifecycleScope.launch { downloadsModel.events.collect(::onDownloadEvent) }
@@ -1142,6 +1252,11 @@ class TvShell(private val host: BrowserShell.Host) : BrowserShell, ActionBar.Cal
         pendingTexts.clear()
         texts.forEach { (text, from) -> openSentText(text, from) }
         RemoteHintDialog.maybeShowOnFirstRun(activity, AppContext.provideConfig())
+        if (vb.flSplash.isVisible) {
+            vb.flSplash.animate().alpha(0f).setDuration(350).withEndAction {
+                vb.flSplash.visibility = View.GONE
+            }.start()
+        }
     }
 
     override fun onNoBackHistory() {
@@ -1413,6 +1528,21 @@ class TvShell(private val host: BrowserShell.Host) : BrowserShell, ActionBar.Cal
                 .setDuration(300)
                 .setInterpolator(DecelerateInterpolator())
                 .start()
+        updateRamHud()
+        vb.tvRamHud.isVisible = AppContext.provideConfig().showRamHud
+    }
+
+    private fun updateRamHud() {
+        val am = activity.getSystemService(Context.ACTIVITY_SERVICE) as? ActivityManager
+        val availMb = if (am != null) {
+            val info = ActivityManager.MemoryInfo()
+            am.getMemoryInfo(info)
+            info.availMem / (1024 * 1024)
+        } else 0L
+        val tab = controller.currentTab.value
+        val ads = tab?.blockedAds ?: 0
+        val lockTag = if (tab?.isDomainLocked == true) " • 🔒" else ""
+        vb.tvRamHud.text = "RAM: ${availMb}MB Free • 🛡️ $ads$lockTag"
     }
 
     private suspend fun displayThumbnail(currentTab: BrowserTab?) {
@@ -1447,6 +1577,7 @@ class TvShell(private val host: BrowserShell.Host) : BrowserShell, ActionBar.Cal
         vb.vVideosPanel.hide()
         tabOptionsHintAnchor = null
         vb.llTabOptionsHint.visibility = View.GONE
+        vb.tvRamHud.visibility = View.GONE
 
         vb.rlActionBar.animate()
                 .translationY(-vb.rlActionBar.height.toFloat())

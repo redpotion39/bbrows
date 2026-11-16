@@ -195,6 +195,15 @@ class WebViewWebEngine(val tab: BrowserTab) : WebEngine, VirtualCursorSupport, S
         webView?.evaluateJavascript(script, null)
     }
 
+    override fun evaluateJavascriptWithResult(script: String, callback: (String?) -> Unit) {
+        val wv = webView
+        if (wv != null) {
+            wv.evaluateJavascript(script) { callback(it) }
+        } else {
+            callback(null)
+        }
+    }
+
     override fun zapElementAt(x: Int, y: Int, onZapped: (String?) -> Unit) {
         val wv = webView ?: return onZapped(null)
         val density = wv.resources.displayMetrics.density.coerceAtLeast(1f)

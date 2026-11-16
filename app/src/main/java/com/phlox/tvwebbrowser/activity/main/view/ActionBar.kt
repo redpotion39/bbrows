@@ -51,6 +51,7 @@ class ActionBar @JvmOverloads constructor(
         /** The panel of the videos of the page other apps can play */
         fun showPageVideos()
         fun showFavorites()
+        fun quickToggleBookmark()
         /** The menu of the less used functions (History, Phone sync, Settings) */
         fun showMoreMenu()
         fun initiateVoiceSearch()
@@ -60,6 +61,7 @@ class ActionBar @JvmOverloads constructor(
         fun onUrlInputDone()
         fun toggleIncognitoMode()
         fun showSitePanel()
+        fun showSendScreen()
     }
 
     private val etUrlFocusChangeListener = OnFocusChangeListener { _, focused ->
@@ -202,6 +204,10 @@ class ActionBar @JvmOverloads constructor(
         vb.ibVideos.setOnClickListener { callback?.showPageVideos() }
         setPageVideoCount(0)
         vb.ibFavorites.setOnClickListener { callback?.showFavorites() }
+        vb.ibFavorites.setOnLongClickListener {
+            callback?.quickToggleBookmark()
+            true
+        }
         vb.ibIncognito.setOnClickListener { callback?.toggleIncognitoMode() }
         vb.ibMore.setOnClickListener { callback?.showMoreMenu() }
 
@@ -219,6 +225,7 @@ class ActionBar @JvmOverloads constructor(
 
         vb.ibIncognito.isActivated = incognitoMode
 
+        vb.ibMobileInput.setOnClickListener { callback?.showSendScreen() }
         vb.ibSite.setOnClickListener { callback?.showSitePanel() }
         vb.flUrl.setOnClickListener { startEditing(selectAllLater = true) }
         vb.flUrl.setOnKeyListener(addressFieldKeyListener)
@@ -359,6 +366,16 @@ class ActionBar @JvmOverloads constructor(
         }
         vb.etUrl.isFocusable = false
         vb.etUrl.isFocusableInTouchMode = false
+    }
+
+    fun setText(text: String) {
+        vb.etUrl.setText(text)
+        vb.etUrl.setSelection(text.length)
+    }
+
+    fun submitText(text: String) {
+        callback?.search(text)
+        stopEditing(submitted = true)
     }
 
     /** Stops editing the address without using it */

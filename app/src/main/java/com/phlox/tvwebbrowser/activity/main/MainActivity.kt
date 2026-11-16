@@ -2,6 +2,7 @@ package com.phlox.tvwebbrowser.activity.main
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.content.ComponentCallbacks2
 import android.content.Context
 import android.content.Intent
 import android.net.ConnectivityManager
@@ -181,6 +182,7 @@ open class MainActivity : AppCompatActivity(), BrowserShell.Host {
         lifecycleScope.launch(Dispatchers.IO) { LegacySync.drop(applicationContext, SendSettings(applicationContext, config.prefs)) }
         settingsModel = ActiveModelsRepository.get(SettingsModel::class, this)
         controller = ActiveModelsRepository.get(BrowserController::class, this)
+        controller.detectAndApplyRamProfile(this)
         autoUpdateModel = ActiveModelsRepository.get(AutoUpdateModel::class, this)
         uiHandler = Handler(Looper.getMainLooper())
         uiMode = UiModeSelector.select(this, config.interfaceMode)
@@ -664,11 +666,15 @@ open class MainActivity : AppCompatActivity(), BrowserShell.Host {
 
     override fun onTrimMemory(level: Int) {
         controller.trimMemory()
+        if (level >= ComponentCallbacks2.TRIM_MEMORY_RUNNING_LOW) {
+            System.gc()
+        }
         super.onTrimMemory(level)
     }
 
     override fun onLowMemory() {
         controller.trimMemory()
+        System.gc()
         super.onLowMemory()
     }
 

@@ -1,5 +1,6 @@
 package com.phlox.tvwebbrowser.send
 
+import android.view.KeyEvent
 import org.json.JSONObject
 
 /**
@@ -11,6 +12,7 @@ sealed class RemoteCommand {
     data class Scroll(val dx: Float, val dy: Float) : RemoteCommand()
     data object Back : RemoteCommand()
     data class InputText(val text: String, val submit: Boolean = false) : RemoteCommand()
+    data class Key(val keyCode: Int) : RemoteCommand()
 
     companion object {
         fun parse(body: String): RemoteCommand? {
@@ -34,6 +36,18 @@ sealed class RemoteCommand {
                         val text = json.optString("text", "")
                         if (text.isEmpty() || text.length > SendRules.MAX_TEXT_LENGTH) null
                         else InputText(text, json.optBoolean("submit", false))
+                    }
+                    "key" -> {
+                        val code = when (json.optString("key")) {
+                            "up" -> KeyEvent.KEYCODE_DPAD_UP
+                            "down" -> KeyEvent.KEYCODE_DPAD_DOWN
+                            "left" -> KeyEvent.KEYCODE_DPAD_LEFT
+                            "right" -> KeyEvent.KEYCODE_DPAD_RIGHT
+                            "enter", "ok" -> KeyEvent.KEYCODE_DPAD_CENTER
+                            "back" -> KeyEvent.KEYCODE_BACK
+                            else -> json.optInt("code", 0)
+                        }
+                        if (code != 0) Key(code) else null
                     }
                     else -> null
                 }

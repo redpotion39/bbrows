@@ -51,6 +51,9 @@ class BrowserTab(var id: Long = 0,
     var certificateErrorHost: String? = null
     /** A page is loading; known only while the tab is the current one (other tabs' engines report nothing) */
     var loading = false
+    /** When non-null, Anti-Redirect Shield blocks any cross-domain redirects or popups away from this host */
+    var domainLockedHost: String? = null
+    val isDomainLocked: Boolean get() = !domainLockedHost.isNullOrEmpty()
 
     fun trimMemory() {
         if (isWebEngineCreated) {

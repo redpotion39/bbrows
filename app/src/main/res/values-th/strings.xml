@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Bbrows: เว็บเบราว์เซอร์สำหรับทีวี</string>
+    <string name="bookmark_added">เพิ่มบุ๊กมาร์กแล้ว</string>
+    <string name="bookmark_removed">ลบบุ๊กมาร์กแล้ว</string>
+    <string name="free_ram">ล้างแรม / เร่งความเร็ว</string>
+    <string name="free_ram_success">ล้างแรมเรียบร้อย: คืนพื้นที่ %s MB</string>
+    <string name="domain_lock_enable">ล็อกหน้าเว็บ (กันเด้งโฆษณา)</string>
+    <string name="domain_lock_disable">ปลดล็อกหน้าเว็บ</string>
+    <string name="domain_lock_enabled_msg">เปิดโหมดกันเด้งแล้ว: ล็อกไว้ที่ %s</string>
+    <string name="domain_lock_disabled_msg">ปิดโหมดกันเด้งหน้าเว็บแล้ว</string>
+    <string name="reader_mode">โหมดอ่านสบายตา (Reader)</string>
+    <string name="reader_mode_on">เปิดโหมดอ่านสบายตาแล้ว</string>
+    <string name="reader_mode_off">ปิดโหมดอ่านแล้ว</string>
+    <string name="tts_read_aloud">ให้ทีวีอ่านหน้านี้ (TTS)</string>
+    <string name="tts_started">กำลังอ่านออกเสียง…</string>
+    <string name="tts_stopped">หยุดอ่านออกเสียงแล้ว</string>
+    <string name="tts_no_text">ไม่พบข้อความสำหรับอ่านบนหน้านี้</string>
+    <string name="tts_unavailable">เครื่องทีวีไม่รองรับการอ่านออกเสียง</string>
+    <string name="night_eye_enable">โหมดถนอมสายตา: เปิด</string>
+    <string name="night_eye_disable">โหมดถนอมสายตา: ปิด</string>
+    <string name="night_eye_on_msg">เปิดโหมดกรองแสงสีฟ้าถนอมสายตาแล้ว</string>
+    <string name="night_eye_off_msg">ปิดโหมดกรองแสงสีฟ้าแล้ว</string>
+    <string name="turbo_lite_enable">โหมดเทอร์โบประหยัดแรม: เปิด</string>
+    <string name="turbo_lite_disable">โหมดเทอร์โบประหยัดแรม: ปิด</string>
+    <string name="turbo_lite_on_msg">เปิดโหมดเทอร์โบประหยัดแรมแล้ว</string>
+    <string name="turbo_lite_off_msg">ปิดโหมดเทอร์โบแล้ว</string>
+    <string name="handoff_qr_title">เปิดต่อบนมือถือ (QR)</string>
+    <string name="handoff_qr_caption">สแกน QR Code ด้วยมือถือเพื่อเปิดหน้าเว็บนี้ดูต่อบนมือถือทันที</string>
+    <string name="send_title">พิมพ์ผ่านมือถือ &amp; รีโมต</string>
+    <string name="send_scan_title">สแกนด้วยมือถือเพื่อพิมพ์ข้อความ</string>
+    <string name="send_or_open">หรือเปิดบนเบราว์เซอร์มือถือ:</string>
+    <string name="send_what">ส่องกล้องมือถือที่ QR Code เพื่อพิมพ์ข้อความ ค้นหา วางลิงก์ และใช้รีโมตควบคุมทีวีจากมือถือได้ทันที</string>
+    <string name="send_page_title">ส่งไปยัง Bbrows</string>
+    <string name="send_page_open_title">เปิดเว็บ หรือ ค้นหาบนทีวี</string>
+    <string name="send_page_address_hint">วาง URL หรือคำค้นหาที่นี่</string>
+    <string name="send_page_send">ส่งไปทีวี</string>
+    <string name="send_page_remote_title">รีโมตควบคุม &amp; พิมพ์ข้อความ</string>
+    <string name="send_page_remote_type_hint">พิมพ์ข้อความลงช่องบนทีวี…</string>
+    <string name="add_this_page">เพิ่มหน้านี้ลงหน้าแรก</string>
+</resources>
