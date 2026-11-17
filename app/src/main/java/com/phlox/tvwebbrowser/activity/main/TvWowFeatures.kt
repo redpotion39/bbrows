@@ -46,29 +46,29 @@ object TvWowFeatures {
                 var title = document.title || '';
                 var overlay = document.createElement('div');
                 overlay.id = 'bbrows-reader-overlay';
-                overlay.style.cssText = 'position:fixed;inset:0;z-index:2147483647;background:#0F172A;color:#F1F5F9;overflow-y:auto;padding:48px 10vw;font-family:system-ui,-apple-system,sans-serif;line-height:1.75;';
+                overlay.style.cssText = 'position:fixed;inset:0;z-index:2147483647;background:#161513;color:#EFE9DE;overflow-y:auto;padding:48px 10vw;font-family:system-ui,-apple-system,sans-serif;line-height:1.75;';
                 var inner = document.createElement('div');
                 inner.id = 'bbrows-reader-inner';
-                inner.style.cssText = 'max-width:860px;margin:0 auto;font-size:26px;';
+                inner.style.cssText = 'max-width:840px;margin:0 auto;font-size:24px;';
 
                 var bar = document.createElement('div');
-                bar.style.cssText = 'display:flex;gap:12px;align-items:center;margin-bottom:28px;padding-bottom:16px;border-bottom:1px solid #334155;';
+                bar.style.cssText = 'display:flex;gap:12px;align-items:center;margin-bottom:28px;padding-bottom:16px;border-bottom:1px solid rgba(239,233,222,0.1);';
                 function mkBtn(label, fn) {
                     var b = document.createElement('button');
                     b.textContent = label;
-                    b.style.cssText = 'background:#1E293B;color:#E2E8F0;border:1px solid #475569;border-radius:8px;padding:8px 18px;font-size:18px;cursor:pointer;';
+                    b.style.cssText = 'background:#262421;color:#EFE9DE;border:1px solid rgba(239,233,222,0.12);border-radius:8px;padding:8px 16px;font-size:16px;font-weight:500;cursor:pointer;';
                     b.onclick = fn;
                     return b;
                 }
-                bar.appendChild(mkBtn('A-', function() {
-                    var sz = parseInt(inner.style.fontSize) || 26;
-                    inner.style.fontSize = Math.max(18, sz - 3) + 'px';
+                bar.appendChild(mkBtn('A−', function() {
+                    var sz = parseInt(inner.style.fontSize) || 24;
+                    inner.style.fontSize = Math.max(18, sz - 2) + 'px';
                 }));
                 bar.appendChild(mkBtn('A+', function() {
-                    var sz = parseInt(inner.style.fontSize) || 26;
-                    inner.style.fontSize = Math.min(44, sz + 3) + 'px';
+                    var sz = parseInt(inner.style.fontSize) || 24;
+                    inner.style.fontSize = Math.min(42, sz + 2) + 'px';
                 }));
-                bar.appendChild(mkBtn('✕ Exit Reader', function() {
+                bar.appendChild(mkBtn('Close reader', function() {
                     overlay.remove();
                     document.documentElement.style.overflow = '';
                 }));
@@ -76,7 +76,7 @@ object TvWowFeatures {
 
                 var h1 = document.createElement('h1');
                 h1.textContent = title;
-                h1.style.cssText = 'font-size:1.45em;line-height:1.3;margin:0 0 24px;color:#38BDF8;';
+                h1.style.cssText = 'font-size:1.4em;font-weight:500;line-height:1.25;margin:0 0 24px;color:#EFE9DE;';
                 inner.appendChild(h1);
 
                 if (paragraphs.length === 0) {
@@ -89,8 +89,8 @@ object TvWowFeatures {
                         var clone = document.createElement(tag === 'li' ? 'p' : tag);
                         clone.textContent = el.innerText.trim();
                         clone.style.cssText = tag.startsWith('h')
-                            ? 'margin:24px 0 12px;color:#93C5FD;font-size:1.15em;'
-                            : 'margin:0 0 18px;';
+                            ? 'margin:24px 0 12px;color:#F59E0B;font-size:1.15em;font-weight:500;'
+                            : 'margin:0 0 16px;color:#EFE9DE;';
                         inner.appendChild(clone);
                     });
                 }

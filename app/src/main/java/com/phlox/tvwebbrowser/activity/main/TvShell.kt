@@ -1541,8 +1541,8 @@ class TvShell(private val host: BrowserShell.Host) : BrowserShell, ActionBar.Cal
         } else 0L
         val tab = controller.currentTab.value
         val ads = tab?.blockedAds ?: 0
-        val lockTag = if (tab?.isDomainLocked == true) " • 🔒" else ""
-        vb.tvRamHud.text = "RAM: ${availMb}MB Free • 🛡️ $ads$lockTag"
+        val lockTag = if (tab?.isDomainLocked == true) " · Locked" else ""
+        vb.tvRamHud.text = "$availMb MB free · $ads ads blocked$lockTag"
     }
 
     private suspend fun displayThumbnail(currentTab: BrowserTab?) {

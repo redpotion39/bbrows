@@ -12,32 +12,33 @@ fragment of the link (#k=…) and goes with each request.
 <title>{{title}}</title>
 <style>
 :root {
-    --bg-page: #EDF6FF;
-    --surface: #FFFFFF;
-    --control: #E6ECF4;
-    --line: #CFDEEE;
-    --focus: #A5D0FF;
-    --ink: #4F4F4F;
-    --ink-faint: #6B7785;
-    --accent: #1A73E8;
-    --on-accent: #FFFFFF;
-    --danger: #C5221F;
-    --ok: #188038;
-    --shadow: 0 4px 24px rgba(95, 172, 255, 0.12);
+    --bg-page: #F7F4EE;
+    --surface: #FDFBF7;
+    --control: #EFE9DF;
+    --line: rgba(31, 27, 22, 0.12);
+    --focus: #D97706;
+    --ink: #1F1B16;
+    --ink-faint: #7B7266;
+    --accent: #D97706;
+    --on-accent: #12110F;
+    --danger: #DC2626;
+    --ok: #16A34A;
+    --shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 }
 @media (prefers-color-scheme: dark) {
     :root {
-        --bg-page: #343A3C;
-        --surface: #1B1B1B;
-        --control: #323940;
-        --line: #4E4E4E;
-        --ink: #F8F9FA;
-        --ink-faint: #B4BCC4;
-        --accent: #8AB4F8;
-        --on-accent: #0B1220;
-        --danger: #FF8A80;
-        --ok: #81C995;
-        --shadow: 0 4px 24px rgba(0, 0, 0, 0.3);
+        --bg-page: #161513;
+        --surface: #1C1A18;
+        --control: #262421;
+        --line: rgba(239, 233, 222, 0.10);
+        --focus: #F59E0B;
+        --ink: #EFE9DE;
+        --ink-faint: #8A847A;
+        --accent: #F59E0B;
+        --on-accent: #12110F;
+        --danger: #E5484D;
+        --ok: #4CC38A;
+        --shadow: none;
     }
 }
 * { box-sizing: border-box; }
@@ -46,7 +47,8 @@ body {
     padding: 24px 16px;
     background: var(--bg-page);
     color: var(--ink);
-    font: 16px/1.5 Roboto, system-ui, -apple-system, "Segoe UI", sans-serif;
+    font: 15px/1.5 Roboto, system-ui, -apple-system, "Segoe UI", sans-serif;
+    -webkit-font-smoothing: antialiased;
 }
 [hidden] { display: none !important; }
 main {
@@ -55,27 +57,31 @@ main {
     padding: 24px;
     background: var(--surface);
     border: 1px solid var(--line);
-    border-radius: 12px;
+    border-radius: 16px;
     box-shadow: var(--shadow);
 }
 h1 { margin: 0; font-size: 22px; line-height: 28px; font-weight: 500; }
-h2 { margin: 24px 0 8px; font-size: 17px; font-weight: 500; }
-.tv { margin: 4px 0 0; color: var(--ink-faint); }
+h2 { margin: 24px 0 8px; font-size: 16px; line-height: 22px; font-weight: 500; }
+.tv { margin: 4px 0 0; font-size: 13px; color: var(--ink-faint); }
 .row { display: flex; gap: 8px; }
 input[type="text"] {
     flex: 1;
     min-width: 0;
-    padding: 10px 12px;
+    height: 44px;
+    padding: 8px 12px;
     font: inherit;
     color: var(--ink);
     background: var(--control);
     border: 1px solid var(--line);
     border-radius: 8px;
 }
-input[type="text"]:focus { outline: 2px solid var(--focus); }
+input[type="text"]:focus { outline: 2px solid var(--focus); outline-offset: -1px; }
 button, .button {
-    display: inline-block;
-    padding: 10px 18px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 44px;
+    padding: 0 16px;
     font: inherit;
     font-weight: 500;
     color: var(--on-accent);
@@ -83,23 +89,27 @@ button, .button {
     border: 0;
     border-radius: 8px;
     cursor: pointer;
+    transition: opacity 150ms cubic-bezier(0.22, 1, 0.36, 1), transform 150ms cubic-bezier(0.22, 1, 0.36, 1);
 }
+button:active, .button:active { transform: scale(0.98); }
 button:disabled { opacity: .5; cursor: default; }
-.hint { margin: 8px 0 0; font-size: 14px; color: var(--ink-faint); }
-.status { margin: 8px 0 0; font-size: 14px; min-height: 20px; }
+.hint { margin: 8px 0 0; font-size: 13px; color: var(--ink-faint); }
+.status { margin: 8px 0 0; font-size: 13px; min-height: 20px; }
 .status.ok { color: var(--ok); }
 .status.error { color: var(--danger); }
 progress { width: 100%; margin-top: 8px; }
 .touchpad {
-    height: 180px;
+    height: 176px;
     background: var(--control);
     border: 1px solid var(--line);
-    border-radius: 10px;
+    border-radius: 12px;
+    padding: 16px;
     display: flex;
     align-items: center;
     justify-content: center;
+    text-align: center;
     color: var(--ink-faint);
-    font-size: 14px;
+    font-size: 13px;
     user-select: none;
     touch-action: none;
 }
@@ -113,27 +123,34 @@ progress { width: 100%; margin-top: 8px; }
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 6px;
-    margin-top: 14px;
+    gap: 8px;
+    margin-top: 16px;
 }
 .dpad-row {
     display: flex;
-    gap: 6px;
+    gap: 8px;
 }
 .dpad-btn {
-    width: 60px;
+    width: 64px;
     height: 48px;
     background: var(--control);
     color: var(--ink);
     border: 1px solid var(--line);
     border-radius: 8px;
-    font-size: 18px;
-    font-weight: bold;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
     user-select: none;
+}
+.dpad-btn svg {
+    width: 20px;
+    height: 20px;
+    stroke: currentColor;
+    stroke-width: 1.75;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    fill: none;
 }
 .dpad-btn:active {
     background: var(--accent);
@@ -143,7 +160,8 @@ progress { width: 100%; margin-top: 8px; }
     width: 72px;
     background: var(--accent);
     color: var(--on-accent);
-    font-size: 16px;
+    font-size: 14px;
+    font-weight: 500;
 }
 </style>
 </head>
@@ -190,15 +208,23 @@ progress { width: 100%; margin-top: 8px; }
     </div>
     <div class="dpad-container">
       <div class="dpad-row">
-        <button type="button" class="dpad-btn" id="dpadUp" aria-label="Up">▲</button>
+        <button type="button" class="dpad-btn" id="dpadUp" aria-label="Up">
+          <svg viewBox="0 0 24 24"><path d="m18 15-6-6-6 6"/></svg>
+        </button>
       </div>
       <div class="dpad-row">
-        <button type="button" class="dpad-btn" id="dpadLeft" aria-label="Left">◀</button>
+        <button type="button" class="dpad-btn" id="dpadLeft" aria-label="Left">
+          <svg viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></svg>
+        </button>
         <button type="button" class="dpad-btn dpad-center" id="dpadOk" aria-label="OK">OK</button>
-        <button type="button" class="dpad-btn" id="dpadRight" aria-label="Right">▶</button>
+        <button type="button" class="dpad-btn" id="dpadRight" aria-label="Right">
+          <svg viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg>
+        </button>
       </div>
       <div class="dpad-row">
-        <button type="button" class="dpad-btn" id="dpadDown" aria-label="Down">▼</button>
+        <button type="button" class="dpad-btn" id="dpadDown" aria-label="Down">
+          <svg viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg>
+        </button>
       </div>
     </div>
   </section>

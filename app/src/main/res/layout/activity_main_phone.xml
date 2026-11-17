@@ -142,39 +142,50 @@ bookmarks and the downloads over the whole window.
         android:id="@+id/flSplash"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#0B1120"
+        android:background="#12110F"
         android:elevation="30dp"
         android:clickable="true"
         android:focusable="false">
 
         <LinearLayout
-            android:layout_width="wrap_content"
+            android:layout_width="280dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:gravity="center"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:padding="24dp">
 
             <ImageView
-                android:layout_width="96dp"
-                android:layout_height="96dp"
-                android:src="@mipmap/ic_launcher"
+                android:layout_width="88dp"
+                android:layout_height="88dp"
+                android:src="@drawable/ic_launcher_foreground"
                 android:importantForAccessibility="no" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="14dp"
-                android:text="Bbrows"
-                android:textColor="#FFFFFF"
+                android:layout_marginTop="16dp"
+                android:text="@string/app_name_short"
+                android:textColor="#EFE9DE"
                 android:textSize="26sp"
                 android:fontFamily="sans-serif-medium" />
 
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="@string/splash_subtitle"
+                android:textColor="#AAA398"
+                android:textSize="13sp" />
+
             <ProgressBar
-                style="?android:attr/progressBarStyleSmall"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:layout_marginTop="16dp"
-                android:indeterminateTint="#38BDF8" />
+                style="@android:style/Widget.ProgressBar.Horizontal"
+                android:layout_width="144dp"
+                android:layout_height="4dp"
+                android:layout_marginTop="20dp"
+                android:indeterminate="true"
+                android:indeterminateTint="#F59E0B"
+                android:progressBackgroundTint="#262421" />
         </LinearLayout>
     </FrameLayout>
 </FrameLayout>

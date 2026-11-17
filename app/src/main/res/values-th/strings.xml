@@ -38,4 +38,6 @@
     <string name="send_page_remote_title">รีโมตควบคุม &amp; พิมพ์ข้อความ</string>
     <string name="send_page_remote_type_hint">พิมพ์ข้อความลงช่องบนทีวี…</string>
     <string name="add_this_page">เพิ่มหน้านี้ลงหน้าแรก</string>
+    <string name="splash_subtitle">เว็บเบราว์เซอร์และเครื่องเล่นวิดีโอสำหรับทีวี</string>
+    <string name="splash_remote_tip">[BACK] เปิดเมนูและแท็บ   [กด OK ค้าง] เมนูเคอร์เซอร์</string>
 </resources>

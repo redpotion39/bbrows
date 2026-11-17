@@ -268,7 +268,9 @@ var searchEngineUrl = localStorage.getItem('search-engine-url') ? localStorage.g
 //where only scripts from files run
 var preconnectedOrigins = {};
 function preconnectTile(index) {
-    var link = suggestions[index];
+    var link = (homePageLinksMode === "BOOKMARKS" && window.hasOwnProperty("TVBro"))
+        ? recommendationsToDisplay.find(function(c) { return c.order == index; })
+        : recommendationsToDisplay[index];
     if (!link || !link.url || Object.keys(preconnectedOrigins).length >= 8) return;
     try {
         var origin = new URL(link.url).origin;

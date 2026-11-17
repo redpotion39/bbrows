@@ -292,17 +292,17 @@
         android:layout_marginEnd="@dimen/ds_space_screen_x"
         android:paddingStart="12dp"
         android:paddingEnd="12dp"
-        android:paddingTop="5dp"
-        android:paddingBottom="5dp"
+        android:paddingTop="6dp"
+        android:paddingBottom="6dp"
         android:background="@drawable/ds_menu_bg"
         android:textColor="?attr/tbColorDsInk"
         android:textSize="12sp"
-        android:fontFamily="sans-serif-medium"
+        android:fontFamily="monospace"
         android:elevation="6dp"
         android:clickable="true"
         android:focusable="false"
         android:visibility="gone"
-        tools:text="RAM: 540MB Free • Ads: 12" />
+        tools:text="540 MB free · 12 ads blocked" />
 
     <!-- Night Eye Shield warm blue-light filter overlay (passes all touches and focus through) -->
     <View
@@ -316,35 +316,36 @@
         android:importantForAccessibility="no"
         android:visibility="gone" />
 
-    <!-- Startup Splash Overlay with Bbrows Logo -->
+    <!-- Startup Splash / Loading Screen: Warm Living-Room Cinema -->
     <FrameLayout
         android:id="@+id/flSplash"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#0B1120"
+        android:background="#12110F"
         android:elevation="30dp"
         android:clickable="true"
         android:focusable="false">
 
         <LinearLayout
-            android:layout_width="wrap_content"
+            android:layout_width="320dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:gravity="center"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:padding="32dp">
 
             <ImageView
-                android:layout_width="104dp"
-                android:layout_height="104dp"
-                android:src="@mipmap/ic_launcher"
+                android:layout_width="96dp"
+                android:layout_height="96dp"
+                android:src="@drawable/ic_launcher_foreground"
                 android:importantForAccessibility="no" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
-                android:text="Bbrows"
-                android:textColor="#FFFFFF"
+                android:text="@string/app_name_short"
+                android:textColor="#EFE9DE"
                 android:textSize="28sp"
                 android:fontFamily="sans-serif-medium" />
 
@@ -352,16 +353,29 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
-                android:text="Fast TV Web Browser"
-                android:textColor="#94A3B8"
-                android:textSize="13sp" />
+                android:text="@string/splash_subtitle"
+                android:textColor="#AAA398"
+                android:textSize="14sp" />
 
+            <!-- Indeterminate warm amber cinema loading track -->
             <ProgressBar
-                style="?android:attr/progressBarStyleSmall"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
+                style="@android:style/Widget.ProgressBar.Horizontal"
+                android:layout_width="160dp"
+                android:layout_height="4dp"
+                android:layout_marginTop="24dp"
+                android:indeterminate="true"
+                android:indeterminateTint="#F59E0B"
+                android:progressBackgroundTint="#262421" />
+
+            <!-- Signature TV remote keycap hint -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
-                android:indeterminateTint="#38BDF8" />
+                android:text="@string/splash_remote_tip"
+                android:textColor="#8A847A"
+                android:textSize="12sp"
+                android:fontFamily="monospace" />
         </LinearLayout>
     </FrameLayout>
 
