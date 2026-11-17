@@ -15,7 +15,7 @@ class PlayerStartTest {
         start.open(watch = true)
         time += 3000
         assertFalse(start.check(firstFrame = false, error = false))
-        assertEquals(2000L, start.remaining())
+        assertEquals(PlayerStart.TIMEOUT_MS - 3000L, start.remaining())
         assertFalse(start.check(firstFrame = true, error = false))
         //an error later shows in the player
         time += 10_000

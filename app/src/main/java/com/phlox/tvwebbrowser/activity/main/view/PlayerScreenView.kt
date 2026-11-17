@@ -156,7 +156,13 @@ class PlayerScreenView @JvmOverloads constructor(
 
     val backCallback = object : OnBackPressedCallback(false) {
         override fun handleOnBackPressed() {
-            if (vb.vPanel.isOpen) vb.vPanel.back() else close(Exit.BACK)
+            if (vb.flScreenOff.isVisible) {
+                exitScreenOffMode()
+            } else if (vb.vPanel.isOpen) {
+                vb.vPanel.back()
+            } else {
+                close(Exit.BACK)
+            }
         }
     }
 
@@ -186,6 +192,8 @@ class PlayerScreenView @JvmOverloads constructor(
         //the screen stays on while the player is shown
         vb.vPlayer.keepScreenOn = true
         vb.btnBack.setOnClickListener { close(if (pageMedia) Exit.SITE_PLAYER else Exit.BACK) }
+        vb.btnRetry.setOnClickListener { reloadStream() }
+        vb.flScreenOff.setOnClickListener { exitScreenOffMode() }
         vb.btnOtherApp.setOnClickListener {
             val video = player.state.value?.video ?: return@setOnClickListener
             if (callback.openInOtherApp(video)) close(Exit.ELSEWHERE)
@@ -214,6 +222,9 @@ class PlayerScreenView @JvmOverloads constructor(
         matchFrameRate = config.matchFrameRate
         applyResizeMode(config.playerResizeMode)
         applySubtitleSize(config.playerSubtitleSize)
+        applyPictureMode(config.playerPictureMode)
+        vb.tvStatsHud.isVisible = config.playerShowStatsHud
+        vb.flScreenOff.isVisible = false
         lastProgressSavedAt = 0L
         player.open(video, callback.cookies(video.url), effectiveStart, ownFrameRate = matchFrameRate)
         start.open(watch = auto)
@@ -235,6 +246,9 @@ class PlayerScreenView @JvmOverloads constructor(
         showScreen(video, pageMedia, title, site)
         applyResizeMode(config.playerResizeMode)
         applySubtitleSize(config.playerSubtitleSize)
+        applyPictureMode(config.playerPictureMode)
+        vb.tvStatsHud.isVisible = config.playerShowStatsHud
+        vb.flScreenOff.isVisible = false
         //it shows its frame at once: no page under it meanwhile
         showPageUnder(false)
         start.stop()
@@ -263,7 +277,7 @@ class PlayerScreenView @JvmOverloads constructor(
     private fun checkStart() {
         if (!isOpen) return
         val state = player.state.value
-        if (start.check(state?.firstFrame == true, state?.error != null)) close(Exit.FAILED) else scheduleStartCheck()
+        if (start.check(state?.firstFrame == true, state?.error != null, state?.buffering == true)) close(Exit.FAILED) else scheduleStartCheck()
     }
 
     private fun showScreen(video: PageVideo, pageMedia: Boolean, title: String?, site: String?) {
@@ -362,6 +376,9 @@ class PlayerScreenView @JvmOverloads constructor(
         player.release()
         hideSurface()
         frameRates.restore()
+        vb.flScreenOff.isVisible = false
+        vb.vPictureFilter.isVisible = false
+        vb.tvStatsHud.isVisible = false
         visibility = GONE
         backCallback.isEnabled = false
         callback.onClosed(exit, position)
@@ -401,7 +418,7 @@ class PlayerScreenView @JvmOverloads constructor(
 
     private fun render(state: NativePlayer.State?) {
         if (state == null) return
-        if (start.check(state.firstFrame, state.error != null)) {
+        if (start.check(state.firstFrame, state.error != null, state.buffering)) {
             //the rules opened it: the page plays the video on, no error is shown
             close(Exit.FAILED)
             return
@@ -418,6 +435,7 @@ class PlayerScreenView @JvmOverloads constructor(
         keys.setMedia(if (state.error == null) state.media else null)
         if (state.firstFrame && state.error == null) saveProgress(force = false)
         vb.pbBuffering.isVisible = state.buffering && state.error == null
+        updateStatsHud(state)
         val error = state.error
         val showError = error != null
         if (showError != vb.flError.isVisible) {
@@ -457,6 +475,10 @@ class PlayerScreenView @JvmOverloads constructor(
      */
     fun dispatchPlayerKey(event: KeyEvent): Boolean {
         if (!isOpen) return false
+        if (vb.flScreenOff.isVisible) {
+            if (event.action == KeyEvent.ACTION_UP) exitScreenOffMode()
+            return true
+        }
         if (vb.vPanel.isOpen || vb.flError.isVisible) return false
         if (event.keyCode == KeyEvent.KEYCODE_MENU) {
             if (event.action == KeyEvent.ACTION_UP) showSettings()
@@ -501,10 +523,23 @@ class PlayerScreenView @JvmOverloads constructor(
                 AppContext.provideConfig().playerAudioBoost = boost
                 player.setAudioBoost(boost.gainMb)
             }
+            override fun pictureMode(): Config.PlayerPictureMode = AppContext.provideConfig().playerPictureMode
+            override fun setPictureMode(mode: Config.PlayerPictureMode) {
+                AppContext.provideConfig().playerPictureMode = mode
+                applyPictureMode(mode)
+            }
+            override fun showStatsHud(): Boolean = AppContext.provideConfig().playerShowStatsHud
+            override fun setShowStatsHud(show: Boolean) {
+                AppContext.provideConfig().playerShowStatsHud = show
+                vb.tvStatsHud.isVisible = show
+                if (show) updateStatsHud(player.state.value)
+            }
             override fun sleepTimerMinutes(): Int = sleepTimerMinutes
             override fun setSleepTimerMinutes(minutes: Int) = scheduleSleepTimer(minutes)
-            override fun skipIntro() = this@PlayerScreenView.skipIntro()
+            override fun skipIntro(seconds: Double) = this@PlayerScreenView.skipIntro(seconds)
             override fun enterPictureInPicture() = this@PlayerScreenView.enterPictureInPicture()
+            override fun enterScreenOffMode() = this@PlayerScreenView.enterScreenOffMode()
+            override fun reloadStream() = this@PlayerScreenView.reloadStream()
             override fun sitePlayer(): SitePlayer? = callback.sitePlayer()
             override fun setSitePlayer(builtIn: Boolean?) = callback.setSitePlayer(builtIn)
             override fun close(exit: Exit) = this@PlayerScreenView.close(exit)
@@ -532,10 +567,78 @@ class PlayerScreenView @JvmOverloads constructor(
         vb.vPlayer.subtitleView?.setFixedTextSize(TypedValue.COMPLEX_UNIT_SP, size.sp)
     }
 
-    private fun skipIntro() {
+    private fun applyPictureMode(mode: Config.PlayerPictureMode) {
+        when (mode) {
+            Config.PlayerPictureMode.NORMAL -> {
+                vb.vPictureFilter.isVisible = false
+            }
+            Config.PlayerPictureMode.CINEMA -> {
+                vb.vPictureFilter.isVisible = true
+                vb.vPictureFilter.setBackgroundColor(Color.argb(30, 255, 180, 50))
+            }
+            Config.PlayerPictureMode.NIGHT_SHIELD -> {
+                vb.vPictureFilter.isVisible = true
+                vb.vPictureFilter.setBackgroundColor(Color.argb(55, 230, 140, 20))
+            }
+            Config.PlayerPictureMode.BRIGHTNESS -> {
+                vb.vPictureFilter.isVisible = true
+                vb.vPictureFilter.setBackgroundColor(Color.argb(35, 255, 255, 255))
+            }
+        }
+    }
+
+    private fun updateStatsHud(state: NativePlayer.State?) {
+        if (!vb.tvStatsHud.isVisible) return
+        if (state == null) {
+            vb.tvStatsHud.text = "Loading..."
+            return
+        }
+        val res = if ((state.videoHeight ?: 0) > 0) "${state.videoHeight}p" else "Auto"
+        val fps = if ((state.frameRate ?: 0f) > 0f) String.format("%.0f fps", state.frameRate) else ""
+        val now = SystemClock.elapsedRealtime()
+        val currentPos = state.media.positionAt(now)
+        val bufferedSec = (player.exoPlayer?.bufferedPosition ?: 0L) / 1000.0
+        val bufSec = ((bufferedSec - currentPos).coerceAtLeast(0.0)).let { String.format("%.1fs", it) }
+        val boost = AppContext.provideConfig().playerAudioBoost.name
+        vb.tvStatsHud.text = "$res $fps\nBuffer: $bufSec\nBoost: $boost"
+    }
+
+    private fun enterScreenOffMode() {
+        vb.vPanel.close()
+        vb.flScreenOff.isVisible = true
+        vb.flScreenOff.requestFocus()
+    }
+
+    private fun exitScreenOffMode() {
+        if (vb.flScreenOff.isVisible) {
+            vb.flScreenOff.isVisible = false
+            restoreFocus()
+        }
+    }
+
+    private fun reloadStream() {
+        val state = player.state.value ?: return
+        val video = state.video
+        val now = SystemClock.elapsedRealtime()
+        val currentPos = state.media.positionAt(now)
+        hideError()
+        player.release()
+        player = NativePlayer(context)
+        val config = AppContext.provideConfig()
+        matchFrameRate = config.matchFrameRate
+        applyResizeMode(config.playerResizeMode)
+        applySubtitleSize(config.playerSubtitleSize)
+        applyPictureMode(config.playerPictureMode)
+        player.open(video, callback.cookies(video.url), currentPos, ownFrameRate = matchFrameRate)
+        start.open(watch = false)
+        scheduleStartCheck()
+        bindPlayer()
+    }
+
+    private fun skipIntro(seconds: Double = SKIP_INTRO_SECONDS) {
         val media = player.state.value?.media ?: return
         if (!media.live && media.duration != null) {
-            player.seekBy(SKIP_INTRO_SECONDS)
+            player.seekBy(seconds)
         }
     }
 

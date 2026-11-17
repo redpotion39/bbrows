@@ -25,14 +25,20 @@ internal class PlayerSettingsMenu(
         fun caption(video: PageVideo, height: Int?, site: String?): String
         fun resizeMode(): Config.PlayerResizeMode
         fun setResizeMode(mode: Config.PlayerResizeMode)
+        fun pictureMode(): Config.PlayerPictureMode
+        fun setPictureMode(mode: Config.PlayerPictureMode)
+        fun showStatsHud(): Boolean
+        fun setShowStatsHud(show: Boolean)
         fun subtitleSize(): Config.SubtitleSize
         fun setSubtitleSize(size: Config.SubtitleSize)
         fun audioBoost(): Config.AudioBoost
         fun setAudioBoost(boost: Config.AudioBoost)
         fun sleepTimerMinutes(): Int
         fun setSleepTimerMinutes(minutes: Int)
-        fun skipIntro()
+        fun skipIntro(seconds: Double = 85.0)
         fun enterPictureInPicture()
+        fun enterScreenOffMode()
+        fun reloadStream()
         fun sitePlayer(): PlayerScreenView.SitePlayer?
         fun setSitePlayer(builtIn: Boolean?)
         fun close(exit: PlayerScreenView.Exit)
@@ -93,6 +99,13 @@ internal class PlayerSettingsMenu(
             host.setResizeMode(Config.PlayerResizeMode.entries[it])
         }
 
+        val currentPicture = host.pictureMode()
+        choice(R.drawable.ic_appearance, context.getString(R.string.player_picture_mode),
+            pictureModeLabel(currentPicture),
+            Config.PlayerPictureMode.entries.map { pictureModeLabel(it) to (it == currentPicture) }) {
+            host.setPictureMode(Config.PlayerPictureMode.entries[it])
+        }
+
         val speed = player.speed
         choice(R.drawable.ic_speed, context.getString(R.string.player_speed), PlayerTracks.speedLabel(speed),
             PlayerTracks.SPEEDS.map { PlayerTracks.speedLabel(it) to (it == speed) }) {
@@ -111,10 +124,31 @@ internal class PlayerSettingsMenu(
             val labels = listOf(context.getString(R.string.player_repeat_off), context.getString(R.string.player_repeat_on))
             choice(R.drawable.ic_repeat, context.getString(R.string.player_repeat), labels[if (looping) 1 else 0],
                 listOf(labels[0] to !looping, labels[1] to looping)) { player.looping = it == 1 }
-            rows += PlayerPanelView.Row(R.drawable.ic_fast_forward, context.getString(R.string.player_skip_intro)) {
-                host.skipIntro()
-                panel.close()
+
+            val quickSkipOptions = listOf(
+                context.getString(R.string.player_skip_10s) to 10.0,
+                context.getString(R.string.player_skip_30s) to 30.0,
+                context.getString(R.string.player_skip_85s) to 85.0,
+                context.getString(R.string.player_skip_120s) to 120.0,
+                context.getString(R.string.player_rewind_10s) to -10.0
+            )
+            rows += PlayerPanelView.Row(R.drawable.ic_fast_forward, context.getString(R.string.player_quick_skip),
+                value = context.getString(R.string.player_skip_85s), chevron = true) {
+                panel.push(PlayerPanelView.Page(context.getString(R.string.player_quick_skip), null,
+                    quickSkipOptions.map { (label, secs) ->
+                        PlayerPanelView.Row(if (secs > 0) R.drawable.ic_fast_forward else R.drawable.ic_fast_rewind, label) {
+                            host.skipIntro(secs)
+                            panel.close()
+                        }
+                    }, context.getString(R.string.player_panel_back)))
             }
+        }
+
+        val statsOn = host.showStatsHud()
+        val statsLabels = listOf(context.getString(R.string.player_repeat_off), context.getString(R.string.player_repeat_on))
+        choice(R.drawable.ic_info, context.getString(R.string.player_stats_hud), statsLabels[if (statsOn) 1 else 0],
+            listOf(statsLabels[0] to !statsOn, statsLabels[1] to statsOn)) {
+            host.setShowStatsHud(it == 1)
         }
 
         val sleepMinutes = host.sleepTimerMinutes()
@@ -122,6 +156,14 @@ internal class PlayerSettingsMenu(
             sleepTimerLabel(sleepMinutes),
             SLEEP_TIMER_OPTIONS.map { sleepTimerLabel(it) to (it == sleepMinutes) }) {
             host.setSleepTimerMinutes(SLEEP_TIMER_OPTIONS[it])
+        }
+
+        rows += PlayerPanelView.Row(R.drawable.ic_videocam_off, context.getString(R.string.player_screen_off)) {
+            host.enterScreenOffMode()
+        }
+
+        rows += PlayerPanelView.Row(R.drawable.ic_refresh, context.getString(R.string.player_reload_stream)) {
+            host.reloadStream()
         }
 
         if (host.pipAvailable()) {
@@ -180,10 +222,19 @@ internal class PlayerSettingsMenu(
         Config.SubtitleSize.EXTRA_LARGE -> context.getString(R.string.player_subtitle_extra_large)
     }
 
+    private fun pictureModeLabel(mode: Config.PlayerPictureMode): String = when (mode) {
+        Config.PlayerPictureMode.NORMAL -> context.getString(R.string.player_picture_mode_normal)
+        Config.PlayerPictureMode.CINEMA -> context.getString(R.string.player_picture_mode_cinema)
+        Config.PlayerPictureMode.NIGHT_SHIELD -> context.getString(R.string.player_picture_mode_night)
+        Config.PlayerPictureMode.BRIGHTNESS -> context.getString(R.string.player_picture_mode_brightness)
+    }
+
     private fun audioBoostLabel(boost: Config.AudioBoost): String = when (boost) {
         Config.AudioBoost.OFF -> context.getString(R.string.player_off)
         Config.AudioBoost.LOW -> context.getString(R.string.player_audio_boost_low)
+        Config.AudioBoost.VOICE_CLEAR -> context.getString(R.string.player_audio_boost_voice)
         Config.AudioBoost.HIGH -> context.getString(R.string.player_audio_boost_high)
+        Config.AudioBoost.ULTRA -> context.getString(R.string.player_audio_boost_ultra)
     }
 
     private fun sleepTimerLabel(minutes: Int): String =

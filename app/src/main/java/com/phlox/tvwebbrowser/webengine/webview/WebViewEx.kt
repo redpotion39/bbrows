@@ -192,7 +192,7 @@ open class WebViewEx(context: Context, val callback: Callback, val jsInterface: 
             domStorageEnabled = true
             allowContentAccess = false
             cacheMode = WebSettings.LOAD_DEFAULT
-            mediaPlaybackRequiresUserGesture = !config.allowAutoplayMedia
+            mediaPlaybackRequiresUserGesture = false
             setGeolocationEnabled(true)
             javaScriptCanOpenWindowsAutomatically = false
             setSupportMultipleWindows(true)

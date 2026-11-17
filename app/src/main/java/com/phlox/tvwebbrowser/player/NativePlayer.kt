@@ -101,7 +101,15 @@ class NativePlayer(context: Context) {
         this.video = video
         this.ownFrameRate = ownFrameRate
         firstFrame = false
-        val headers = ExternalVideoPlayer.headers(video, cookies)
+        val headers = ExternalVideoPlayer.headers(video, cookies).toMutableMap()
+        video.pageUrl?.takeIf { it.isNotBlank() }?.let { page ->
+            try {
+                val uri = android.net.Uri.parse(page)
+                if (uri.scheme != null && uri.host != null) {
+                    headers["Origin"] = "${uri.scheme}://${uri.host}"
+                }
+            } catch (_: Exception) {}
+        }
         val http = DefaultHttpDataSource.Factory()
             .setAllowCrossProtocolRedirects(true)
             .setConnectTimeoutMs(HTTP_TIMEOUT_MS)
@@ -114,7 +122,9 @@ class NativePlayer(context: Context) {
         val mediaSourceFactory = DefaultMediaSourceFactory(dataSourceFactory)
             .setLoadErrorHandlingPolicy(DefaultLoadErrorHandlingPolicy(LOAD_RETRY_COUNT))
         val renderersFactory = DefaultRenderersFactory(context).setEnableDecoderFallback(true)
-        val lowRam = (context.getSystemService(Context.ACTIVITY_SERVICE) as? ActivityManager)?.isLowRamDevice == true
+        val am = context.getSystemService(Context.ACTIVITY_SERVICE) as? ActivityManager
+        val memInfo = ActivityManager.MemoryInfo().also { am?.getMemoryInfo(it) }
+        val lowRam = am?.isLowRamDevice == true || ((memInfo?.totalMem ?: 0L) / (1024 * 1024)) <= 2500
         val player = ExoPlayer.Builder(context, renderersFactory)
             .setMediaSourceFactory(mediaSourceFactory)
             .setLoadControl(createLoadControl(lowRam))
@@ -281,11 +291,11 @@ class NativePlayer(context: Context) {
 
         @VisibleForTesting
         internal fun createLoadControl(lowRam: Boolean): DefaultLoadControl {
-            val minBufferMs = if (lowRam) 20_000 else 30_000
-            val maxBufferMs = if (lowRam) 40_000 else 60_000
+            val minBufferMs = if (lowRam) 12_000 else 20_000
+            val maxBufferMs = if (lowRam) 25_000 else 40_000
             val backBufferMs = if (lowRam) 15_000 else 30_000
             return DefaultLoadControl.Builder()
-                .setBufferDurationsMs(minBufferMs, maxBufferMs, 2_500, 5_000)
+                .setBufferDurationsMs(minBufferMs, maxBufferMs, 1_000, 2_000)
                 .setBackBuffer(backBufferMs, true)
                 .setPrioritizeTimeOverSizeThresholds(true)
                 .build()

@@ -36,3 +36,40 @@ window.addEventListener("touchstart", function(e) {
 window.addEventListener("mousemove", function(e) {
     window.TVBRO_activeElement = e.target;
 }, {capture: true, passive: true});
+
+// Anti-clickjacking transparent overlay defuser for streaming sites
+(function() {
+    function defuseOverlays() {
+        try {
+            var w = window.innerWidth;
+            var h = window.innerHeight;
+            if (!w || !h || !document.body) return;
+            var all = document.querySelectorAll("div, a, span");
+            for (var i = 0; i < all.length; i++) {
+                var el = all[i];
+                var s = window.getComputedStyle(el);
+                if (s.position === "fixed" || s.position === "absolute") {
+                    var z = parseInt(s.zIndex, 10);
+                    if (z >= 9999) {
+                        var rect = el.getBoundingClientRect();
+                        if (rect.width >= w * 0.8 && rect.height >= h * 0.8) {
+                            var op = parseFloat(s.opacity);
+                            var bg = s.backgroundColor;
+                            var isTransparent = op <= 0.05 || bg === "transparent" || bg === "rgba(0, 0, 0, 0)";
+                            if (isTransparent && !el.querySelector("video, audio")) {
+                                el.remove();
+                            }
+                        }
+                    }
+                }
+            }
+        } catch (e) {}
+    }
+    if (document.readyState === "complete" || document.readyState === "interactive") {
+        defuseOverlays();
+    } else {
+        document.addEventListener("DOMContentLoaded", defuseOverlays);
+    }
+    window.addEventListener("load", defuseOverlays);
+    setInterval(defuseOverlays, 2000);
+})();

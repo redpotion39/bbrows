@@ -48,6 +48,8 @@ class Config(val prefs: SharedPreferences, private val credentialsPrefs: SharedP
         const val PLAYER_RESIZE_MODE_KEY = "player_resize_mode"
         const val PLAYER_SUBTITLE_SIZE_KEY = "player_subtitle_size"
         const val PLAYER_AUDIO_BOOST_KEY = "player_audio_boost"
+        const val PLAYER_PICTURE_MODE_KEY = "player_picture_mode"
+        const val PLAYER_SHOW_STATS_HUD_KEY = "player_show_stats_hud"
         /** The toast about the built-in player shows the first times it opens */
         const val BUILT_IN_PLAYER_INTRO_TIMES = 3
         const val DIRECT_NAVIGATION_MODE_HINT_SUPPRESS_KEY = "direct_navigation_mode_hint_suppress"
@@ -215,6 +217,11 @@ class Config(val prefs: SharedPreferences, private val credentialsPrefs: SharedP
         FIT, FILL, ZOOM
     }
 
+    /** Video picture enhancement filter in the built-in TV player */
+    enum class PlayerPictureMode {
+        NORMAL, CINEMA, NIGHT_SHIELD, BRIGHTNESS
+    }
+
     /** Subtitle text size in the built-in TV player */
     enum class SubtitleSize(val sp: Float) {
         SMALL(18f), NORMAL(22f), LARGE(26f), EXTRA_LARGE(32f)
@@ -222,7 +229,7 @@ class Config(val prefs: SharedPreferences, private val credentialsPrefs: SharedP
 
     /** Voice/loudness boost gain in millibels for the built-in player */
     enum class AudioBoost(val gainMb: Int) {
-        OFF(0), LOW(600), HIGH(1200)
+        OFF(0), LOW(600), VOICE_CLEAR(900), HIGH(1200), ULTRA(1600)
     }
 
     /** DNS-over-HTTPS resolver mode for engines that support it */
@@ -283,6 +290,19 @@ class Config(val prefs: SharedPreferences, private val credentialsPrefs: SharedP
             ?.let { name -> AudioBoost.entries.find { it.name == name } } ?: AudioBoost.OFF
         set(value) {
             prefs.edit().putString(PLAYER_AUDIO_BOOST_KEY, value.name).apply()
+        }
+
+    var playerPictureMode: PlayerPictureMode
+        get() = prefs.getString(PLAYER_PICTURE_MODE_KEY, null)
+            ?.let { name -> PlayerPictureMode.entries.find { it.name == name } } ?: PlayerPictureMode.NORMAL
+        set(value) {
+            prefs.edit().putString(PLAYER_PICTURE_MODE_KEY, value.name).apply()
+        }
+
+    var playerShowStatsHud: Boolean
+        get() = prefs.getBoolean(PLAYER_SHOW_STATS_HUD_KEY, false)
+        set(value) {
+            prefs.edit().putBoolean(PLAYER_SHOW_STATS_HUD_KEY, value).apply()
         }
 
     var directNavigationModeHintSuppress: Boolean

@@ -40,4 +40,22 @@
     <string name="add_this_page">เพิ่มหน้านี้ลงหน้าแรก</string>
     <string name="splash_subtitle">เว็บเบราว์เซอร์และเครื่องเล่นวิดีโอสำหรับทีวี</string>
     <string name="splash_remote_tip">[BACK] เปิดเมนูและแท็บ   [กด OK ค้าง] เมนูเคอร์เซอร์</string>
+    <string name="player_retry">ลองใหม่อีกครั้ง</string>
+    <string name="player_reload_stream">โหลดสตรีมใหม่</string>
+    <string name="player_screen_off">ปิดหน้าจอ (ฟังแต่เสียง)</string>
+    <string name="player_screen_off_hint">โหมดฟังแต่เสียง • กดปุ่มใดก็ได้บนรีโมตเพื่อเปิดหน้าจอ</string>
+    <string name="player_picture_mode">โหมดภาพ</string>
+    <string name="player_picture_mode_normal">ภาพมาตรฐาน</string>
+    <string name="player_picture_mode_cinema">โหมดภาพยนตร์ (Cinema)</string>
+    <string name="player_picture_mode_night">โหมดถนอมสายตา (Night Eye)</string>
+    <string name="player_picture_mode_brightness">เร่งความสว่างฉากมืด</string>
+    <string name="player_stats_hud">ข้อมูลวิดีโอ &amp; บัฟเฟอร์สด (HUD)</string>
+    <string name="player_quick_skip">กรอข้ามเวลาเร็ว</string>
+    <string name="player_skip_10s">+10 วินาที</string>
+    <string name="player_skip_30s">+30 วินาที</string>
+    <string name="player_skip_85s">ข้ามอินโทร (+85 วิ)</string>
+    <string name="player_skip_120s">ข้ามอินโทร (+2 นาที)</string>
+    <string name="player_rewind_10s">-10 วินาที</string>
+    <string name="player_audio_boost_voice">เน้นเสียงพูดชัด (+9 dB)</string>
+    <string name="player_audio_boost_ultra">เร่งเสียงสูงสุด (+16 dB)</string>
 </resources>

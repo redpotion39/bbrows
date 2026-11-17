@@ -21,6 +21,15 @@ settings at the end of the screen.
       app:show_buffering="never"
       android:focusable="false" />
 
+  <!-- Picture mode color filter overlay (Cinema / Night Shield / Brightness) -->
+  <View
+      android:id="@+id/vPictureFilter"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:focusable="false"
+      android:clickable="false"
+      android:visibility="gone" />
+
   <!-- until the first frame of the video: the paused page shows through it, dimmed, under the spinner -->
   <View
       android:id="@+id/vStartScrim"
@@ -101,6 +110,12 @@ settings at the end of the screen.
         <!-- the video of the page goes on in the player of the site; another video: back to the page -->
         <TextView
             style="@style/Widget.TVBro.Button.Video"
+            android:id="@+id/btnRetry"
+            android:layout_marginEnd="@dimen/player_error_button_gap"
+            android:text="@string/player_retry" />
+
+        <TextView
+            style="@style/Widget.TVBro.Button.Video"
             android:id="@+id/btnBack"
             android:text="@string/player_watch_on_site" />
 
@@ -111,6 +126,44 @@ settings at the end of the screen.
             android:text="@string/player_open_in_other_app" />
       </LinearLayout>
     </LinearLayout>
+  </FrameLayout>
+
+  <!-- Real-time Nerd Stats HUD (Resolution, FPS, Buffer Health) -->
+  <TextView
+      android:id="@+id/tvStatsHud"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_gravity="top|start"
+      android:layout_marginStart="24dp"
+      android:layout_marginTop="24dp"
+      android:padding="8dp"
+      android:background="#B3000000"
+      android:textColor="#FFFFFF"
+      android:textSize="12sp"
+      android:fontFamily="monospace"
+      android:focusable="false"
+      android:clickable="false"
+      android:visibility="gone"
+      tools:visibility="visible"
+      tools:text="1080p @ 60fps\nBuffer: 24.5s" />
+
+  <!-- Screen Off Audio-Only Mode: black overlay for music/podcasts with audio playing -->
+  <FrameLayout
+      android:id="@+id/flScreenOff"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:background="@android:color/black"
+      android:focusable="true"
+      android:clickable="true"
+      android:visibility="gone">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:textColor="#44FFFFFF"
+        android:textSize="13sp"
+        android:text="@string/player_screen_off_hint" />
   </FrameLayout>
 
   <com.phlox.tvwebbrowser.activity.main.view.PlayerPanelView

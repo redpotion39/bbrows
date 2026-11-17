@@ -321,13 +321,14 @@ class BrowserController : ActiveModel() {
             val memInfo = ActivityManager.MemoryInfo()
             am.getMemoryInfo(memInfo)
             val totalRamMb = memInfo.totalMem / (1024 * 1024)
+            val availRamMb = memInfo.availMem / (1024 * 1024)
             maxWarmTabs = when {
-                memInfo.lowMemory || totalRamMb <= 1200 -> 1 // 1GB TV boxes / sticks
+                memInfo.lowMemory || totalRamMb <= 1200 || (totalRamMb <= 2200 && availRamMb < 400) -> 1 // 1GB TV boxes or 2GB TVs low on free RAM
                 totalRamMb <= 2200 -> 2                      // 2GB TV devices
                 totalRamMb <= 3500 -> 3                      // 3GB TV devices
                 else -> 4                                    // 4GB+ flagship TVs
             }
-            Log.i(TAG, "RAM profile detected: total RAM ${totalRamMb}MB, lowMemory=${memInfo.lowMemory}, dynamic maxWarmTabs=$maxWarmTabs")
+            Log.i(TAG, "RAM profile detected: total RAM ${totalRamMb}MB, avail RAM ${availRamMb}MB, lowMemory=${memInfo.lowMemory}, dynamic maxWarmTabs=$maxWarmTabs")
             trimExcessBackgroundTabs()
         } catch (e: Exception) {
             maxWarmTabs = 2
@@ -340,6 +341,11 @@ class BrowserController : ActiveModel() {
         val memBefore = ActivityManager.MemoryInfo().apply { am?.getMemoryInfo(this) }.availMem
 
         trimMemory()
+        try {
+            (currentTab.value?.webEngine?.getView() as? android.webkit.WebView)?.clearCache(false)
+        } catch (e: Exception) {
+            // best effort
+        }
         System.gc()
 
         val memAfter = ActivityManager.MemoryInfo().apply { am?.getMemoryInfo(this) }.availMem
@@ -604,8 +610,13 @@ class BrowserController : ActiveModel() {
      * Whether the videos that pages of the [host] put in fullscreen go to the built-in player: its own setting
      * ([builtInPlayerSetting]), else the default ([com.phlox.tvwebbrowser.Config.builtInPlayerByDefault])
      */
-    fun prefersBuiltInPlayer(host: String): Boolean =
-        builtInPlayerSetting(host) ?: config.builtInPlayerByDefault
+    fun prefersBuiltInPlayer(host: String): Boolean {
+        val h = host.lowercase(java.util.Locale.ROOT)
+        if (h.contains("youtube.com") || h.contains("youtu.be")) {
+            return builtInPlayerSetting(host) ?: false
+        }
+        return builtInPlayerSetting(host) ?: config.builtInPlayerByDefault
+    }
 
     /** The player of fullscreen videos the [host] chose: true the built-in one, false its own, null the default */
     fun builtInPlayerSetting(host: String): Boolean? =

@@ -26,13 +26,14 @@ class PlayerStart(private val now: () -> Long) {
      * The state of the player changed, or [remaining] passed. @return true when the video did not start: give it
      * back to the page (once)
      */
-    fun check(firstFrame: Boolean, error: Boolean): Boolean {
+    fun check(firstFrame: Boolean, error: Boolean, isBuffering: Boolean = false): Boolean {
         if (!watching) return false
         if (firstFrame) {
             watching = false
             return false
         }
-        if (!error && now() - openedAt < TIMEOUT_MS) return false
+        val elapsed = now() - openedAt
+        if (!error && (elapsed < TIMEOUT_MS || (isBuffering && elapsed < MAX_BUFFERING_TIMEOUT_MS))) return false
         watching = false
         return true
     }
@@ -42,6 +43,8 @@ class PlayerStart(private val now: () -> Long) {
 
     companion object {
         /** A video the rules opened shows its first frame within this time, or goes back to the page */
-        const val TIMEOUT_MS = 5000L
+        const val TIMEOUT_MS = 15_000L
+        /** Maximum wait time while the stream is actively buffering data from network */
+        const val MAX_BUFFERING_TIMEOUT_MS = 25_000L
     }
 }
